@@ -2,7 +2,11 @@ package com.camelcasing.image.gif;
 
 import java.util.ArrayList;
 
+import org.apache.log4j.Logger;
+
 public class LZWCompressor{
+	
+	private Logger logger = Logger.getLogger(getClass());
 
 	private final int DICINCREMENT;
 	private final int STARTBITSIZE;
@@ -13,8 +17,6 @@ public class LZWCompressor{
 	private int currentDictionaryCount;
 	private ArrayList<InputColor> dictionary;
 	private int maxBit;
-
-	private int bitStreamByteCount = 0;
 	private int current;
 	private int dicCount = 0;
 	private int next;
@@ -52,7 +54,8 @@ public class LZWCompressor{
 			bitSize++;
 			maxBit = setMaxBitSize(bitSize);
 		}
-		if (currentDictionaryCount > 4095) {
+		if (currentDictionaryCount > 4095){
+			logger.debug("Dictionary Cleared");
 			clearDictionary();
 		}
 		dictionary.add(dicCount, color);
@@ -65,8 +68,7 @@ public class LZWCompressor{
 	 * colorTable
 	 */
 	private void compress() {
-		//System.out.println(rawData.length);
-		while (inputLocation < rawData.length) {
+		while (inputLocation < rawData.length){
 			setCompressValues();
 		}
 	}
@@ -118,21 +120,29 @@ public class LZWCompressor{
 		bitStream.insert(0, GIFUtils.getBitsFromInt(i, bitSize));
 	}
 
-	//TODO put into blocks 0 - 255 bytes --> return an array of ArrayLists???
-	//byte size need to be a whole byte
 	public ArrayList<Integer> getPackageBytes() {
 		packagedBytes = new ArrayList<Integer>();
 		bitStream.append(GIFUtils.getBitsFromInt(getClearCode(), STARTBITSIZE + 1)); //KEEP
+		logger.debug("finalBitSize = " + getFinalBitSize());
+		logger.debug("terminationCode = " + this.getTerminationCode());
 		bitStream.insert(0, GIFUtils.getBitsFromInt(getTerminationCode(), getFinalBitSize())); //KEEP
 		String s = bitStream.toString();
 		
 		int numberOfBytes = s.length() / 8;
+			if(!(s.length() % 8 == 0)) numberOfBytes++;
+		logger.debug("numberOfBytes = " + numberOfBytes);
+		
 		int numberOfFullBlocks = numberOfBytes / 255;
+		logger.debug("numberOfFullBlocks = " + numberOfFullBlocks);
+		
 		int finalBlockSize = numberOfBytes % 255;
+		logger.debug("finalBlockSize = " + finalBlockSize);
 		
 		int i = 0;
+		int byteInCount = 0;
 		try{
-			for (i = s.length();; i -= 8) {
+			for (i = s.length();; i -= 8){
+				byteInCount++;
 				packagedBytes.add(Integer.valueOf(s.substring(i - 8, i), 2));
 			}
 		}catch (StringIndexOutOfBoundsException e) {
@@ -140,8 +150,10 @@ public class LZWCompressor{
 				while (sb.length() != 8) {
 					sb.insert(0, '0');
 				}
+				byteInCount++;
 			packagedBytes.add(Integer.valueOf(sb.toString(), 2));
 		}
+		logger.debug("byteInCount = " + byteInCount);
 		
 			if(packagedBytes.size() <= 255){
 				packagedBytes.add(0, packagedBytes.size());
@@ -153,19 +165,20 @@ public class LZWCompressor{
 				packagedBytes.add((packagedBytes.size() - finalBlockSize), finalBlockSize);
 			}
 		
+			logger.debug("bytesReturned = " + packagedBytes.size());
 		return packagedBytes;
 	}
 
 	private void clearDictionary() {
-			bitSize = STARTBITSIZE;
-			setInitialDictionaryCountValue(bitSize);
+		bitStream.insert(0, GIFUtils.getBitsFromInt(getClearCode(), bitSize));
+		//bitSize = STARTBITSIZE;
+		currentDictionaryCount = setInitialDictionaryCountValue(bitSize);
 		dicCount = 0;
-		bitStream.insert(0, getClearCode());
-			dictionary = new ArrayList<InputColor>();
+		//dictionary = new ArrayList<InputColor>();
 	}
 
 	private int getTerminationCode() {
-		return ((int) Math.pow(2, STARTBITSIZE)) + 1;
+		return getClearCode() + 1;
 	}
 
 	public int getClearCode() {

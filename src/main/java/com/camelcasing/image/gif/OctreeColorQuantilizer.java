@@ -1,13 +1,17 @@
+/**TODO
+ * randomise the colorPointers before quantilization
+ */
+
 package com.camelcasing.image.gif;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-//import org.apache.log4j.Logger;
+import org.apache.log4j.Logger;
 
 public class OctreeColorQuantilizer{
 	
-		//private static Logger log = Logger.getLogger(OctreeColorQuantilizer.class);
+		private Logger logger = Logger.getLogger(OctreeColorQuantilizer.class);
 
 		private BufferedImage image;
 		/**
@@ -21,33 +25,43 @@ public class OctreeColorQuantilizer{
 		private int[] imageColorPalette;
 		private OctreeNode root;
 		private ArrayList<OctreeNode> colorPointers = new ArrayList<OctreeNode>();
+		private ArrayList<int[]> colorBitArray = new ArrayList<int[]>();
 		private int[] quantilizedInput;
 		
 		private final int MAX_COLORS;
-		private final int DEPTH = 6;
+		private final int DEPTH = 8;
 
 	public OctreeColorQuantilizer(BufferedImage image, int maxColors){
 		this.image = image;
 		this.MAX_COLORS = maxColors;
-		root = new OctreeNode(null);
+		root = new OctreeNode(null, 0);
+	}
+	
+	public OctreeColorQuantilizer quantilize(){
 		extractRGBValues();
 		createOctree();
+		logger.debug("before purning colour count = " + colorPointers.size());
 			if(!checkIfEnoughColors()){
 				pruneTree();
 			}
+		logger.debug("After pruning colour count = " + colorPointers.size());
 		quantilizedInput = generateIndexedImage();
 		colorPalette = createColorPalette();
+		return(this);
 	}
 		
+	/**
+	 * Processes the image row by row and adds RGB array to rawInput
+	 */
 	private void extractRGBValues(){
 		int w = image.getWidth();
 		int h = image.getHeight();
 		int current;
 		int indexCount = 0;
 		rawInput = new int[w * h][3];
-			for(int i = 0; i < w; i++){
-				for(int j = 0; j < h; j++){
-					current = image.getRGB(i, j);
+			for(int i = 0; i < h; i++){
+				for(int j = 0; j < w; j++){
+					current = image.getRGB(j, i);
 					rawInput[indexCount][0] = (current >> 16) & 0xFF; //red value
 					rawInput[indexCount][1] = (current >> 8) & 0xFF; //green value
 					rawInput[indexCount++][2] = current & 0xFF; //blue value
@@ -61,6 +75,7 @@ public class OctreeColorQuantilizer{
 				int g = rawInput[i][1];
 				int b = rawInput[i][2];
 				int[] colors = getCombinedColorNumbers(r, g, b);
+				colorBitArray.add(colors);
 				addToNode(colors, r, g, b);
 			}
 	}
@@ -78,86 +93,62 @@ public class OctreeColorQuantilizer{
 	
 	public void addToNode(int[] colors, int r, int g, int b){
 		OctreeNode node = root.getChild(colors[0])
-			.addColor()
 			.getChild(colors[1])
-			.addColor()
 			.getChild(colors[2])
-			.addColor()
 			.getChild(colors[3])
-			.addColor()
 			.getChild(colors[4])
-			.addColor()
 			.getChild(colors[5])
-			.addColor()
 			.getChild(colors[6])
-			.addColor()
 			.getChild(colors[7])
-			.addColor()
-			.addRGBValue(r, g, b);
-			if(!colorPointers.contains(node)){
-				colorPointers.add(node);
-			}
-	}
-	
-	//add code to start with least or most popular colours
-	private void pruneTree(){
-		divideColorTotals();
-		OctreeNode addNode = null;
-			while(true){
-				for(int i = 0; i < colorPointers.size(); i++){
-					OctreeNode o = colorPointers.get(i);
-						if(o.getParent() != null){
-							addNode = o.getParent();
-						}
-					int c = 0;
-					int r = 0;
-					int g = 0;
-					int b = 0;
-						for(int j = 0; j < 8; j++){
-							OctreeNode on;
-							if(addNode != null && (on = addNode.getChildIfExists(j)) != null){
-								colorPointers.remove(on);
-								c += on.getColorCount();
-								r += on.getRed();
-								g += on.getGreen();
-								b += on.getBlue();
-							}
-						}
-					addNode.massacreChildren(r, g, b, c);
-					colorPointers.add(0, addNode);
-						if(checkIfEnoughColors()){
-							return;
-						}
+			.addColor(r, g, b);
+				if(!colorPointers.contains(node)){
+					colorPointers.add(node);
 				}
-			}
 	}
 	
-	private void divideColorTotals(){
-		for(OctreeNode otn : colorPointers){
-			otn.setBlue(otn.getBlue() / otn.getColorCount());
-			otn.setRed(otn.getRed() / otn.getColorCount());
-			otn.setGreen(otn.getGreen() / otn.getColorCount());
+	private void pruneTree(){
+		while(true){
+			int count = 0;
+			if(!checkIfEnoughColors()){
+				addRemoveNode(count);
+				count++;
+					if(count == colorPointers.size()){
+						count = 0;
+					}
+			}else{
+				return;
+			}
 		}
 	}
 	
-	private int[] generateIndexedImage(){
-		int[] ret = new int[rawInput.length];
-		int retCount = 0;
-			for(int i = 0; i < rawInput.length; i++){
-				int r = rawInput[i][0];
-				int g = rawInput[i][1];
-				int b = rawInput[i][2];
-				int[] colors = getCombinedColorNumbers(r, g, b);
-				OctreeNode node = root.getChild(colors[0]);
-				int count = 1;
-					while(!node.isEnd()){
-						node = node.getChild(colors[count]);
-						count++;
-					}
-				ret[retCount] = colorPointers.indexOf(node);
-				retCount++;
+	private void addRemoveNode(int index){
+		OctreeNode o = colorPointers.get(index);
+		OctreeNode oP = o.getParent();
+		colorPointers.remove(o);
+			if(!colorPointers.contains(oP)){
+				colorPointers.add(oP);
 			}
-		return ret;
+		o.mergeUp();
+	}
+	
+	private int[] generateIndexedImage(){
+		int[] indexedColors = new int[colorBitArray.size()];
+		logger.debug("colorBitArray.size() = " + colorBitArray.size());
+		int count = 0;
+			for(int[] c : colorBitArray){
+				int targetCount = 1;
+				OctreeNode target = root.getChildIfExists(c[0]);
+					while(target.getChildIfExists(c[targetCount]) != null){
+						target = target.getChildIfExists(c[targetCount]);
+						if(targetCount == 7){
+							break;
+						}
+						targetCount++;
+					}
+				indexedColors[count] = colorPointers.indexOf(target);
+				count++;
+			}
+		return indexedColors;
 	}
 	
 	public int[] getQuantilizedInput(){

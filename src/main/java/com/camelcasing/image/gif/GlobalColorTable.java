@@ -54,8 +54,11 @@ public class GlobalColorTable{
 	public int[] getColorTable(){
 		return colorTable;
 	}
-	
+
 	public int getColorTableSize(){
+//			if(tableSize == 1){
+//				return 2;
+//			}
 		return tableSize;
 	}
 }
