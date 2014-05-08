@@ -30,13 +30,16 @@ public class LZWCompressor{
 		STARTBITSIZE = bitSize;
 		this.rawData = rawData;
 		this.bitSize = bitSize + 1;
+		logger.debug("start actual bitSize = " + this.bitSize);
 		inputLocation = 0;
 		pattern = null;
 		found = null;
 		bitStream = new StringBuilder(8);
 		dictionary = new ArrayList<InputColor>();
 		currentDictionaryCount = setInitialDictionaryCountValue(this.bitSize);
+		logger.debug("currentDictionaryCount = " + currentDictionaryCount);
 		maxBit = setMaxBitSize(this.bitSize);
+		logger.debug("start maxBit = " + this.maxBit);
 
 		compress();
 	}
@@ -54,13 +57,12 @@ public class LZWCompressor{
 			bitSize++;
 			maxBit = setMaxBitSize(bitSize);
 		}
-		if (currentDictionaryCount > 4095){
-			logger.debug("Dictionary Cleared");
-			clearDictionary();
-		}
 		dictionary.add(dicCount, color);
 		dicCount++;
 		currentDictionaryCount++;
+		if (currentDictionaryCount > 4095){
+			clearDictionary();
+		}
 	}
 
 	/**
@@ -171,10 +173,13 @@ public class LZWCompressor{
 
 	private void clearDictionary() {
 		bitStream.insert(0, GIFUtils.getBitsFromInt(getClearCode(), bitSize));
-		//bitSize = STARTBITSIZE;
+		bitSize = STARTBITSIZE + 1;
 		currentDictionaryCount = setInitialDictionaryCountValue(bitSize);
 		dicCount = 0;
-		//dictionary = new ArrayList<InputColor>();
+		dictionary = new ArrayList<InputColor>();
+		maxBit = setMaxBitSize(bitSize);
+		logger.debug("Dictionary Cleared");
+		
 	}
 
 	private int getTerminationCode() {

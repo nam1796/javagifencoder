@@ -32,11 +32,12 @@ public class TestCreation{
 	public void writeAndReadFromFile2(){
 		try{
 			
-			BufferedImage image = ImageIO.read(new File("/media/camelcasing/ExtraDrive/linux.jpg"));
+			BufferedImage image = ImageIO.read(new File("/media/camelcasing/ExtraDrive/ricci.jpg"));
 			OctreeColorQuantilizer q = new OctreeColorQuantilizer(image, 256).quantilize();
 			int[] rawInput = q.getQuantilizedInput();
 			int[][] colorPalette = q.getColorPalette();
 			
+			logger.debug("colorPalette.length = " + colorPalette.length);
 			logger.debug("rawInput.length = " + rawInput.length);
 			
 			int width = image.getWidth();
@@ -58,10 +59,11 @@ public class TestCreation{
 				
 			logger.debug("globalColorTableSize = " + ct.getColorTableSize());
 				
-			int extraColor = (int)Math.pow(2, colorTableSize);
+			int extraColor = (int)Math.pow(2, colorTableSize + 1);
 			logger.debug("extraColor = " + extraColor);
 				for(int i = colorPalette.length; i < extraColor; i++){
 					ct.addColor(0,  0,  0);
+					logger.debug("ExtraColor added");
 				}
 			
 			ImageDescriptorFields idf = new ImageDescriptorFields(false, false, false, 0);
@@ -77,7 +79,7 @@ public class TestCreation{
 			
 			ArrayList<Integer> packagedBytes = compressor.getPackageBytes();			
 			
-			OutputStream os = new FileOutputStream(new File("/media/camelcasing/ExtraDrive/QuantilizedGif2.gif"));
+			OutputStream os = new FileOutputStream(new File("/media/camelcasing/ExtraDrive/QuantilizedGif.gif"));
 				
 			for(int j : header) os.write(j);
 			for(int j : lsdBytes) os.write(j);
