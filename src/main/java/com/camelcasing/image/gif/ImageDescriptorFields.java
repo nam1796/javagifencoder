@@ -39,7 +39,7 @@ public class ImageDescriptorFields{
 	}
 	
 	/**
-	 * @return
+	 * @return True/False if input was validated, checks the size of the colorTable is between 0 and 7
 	 * @throws IllegalArgumentException
 	 */
 	private boolean validate() throws IllegalArgumentException{
@@ -48,7 +48,7 @@ public class ImageDescriptorFields{
 	}
 	
 	/**
-	 * @return
+	 * @return The <code>Integer</code> values of these fields
 	 */
 	public int create(){
 		StringBuilder sBuilder = new StringBuilder(6);

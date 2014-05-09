@@ -3,7 +3,7 @@ package com.camelcasing.image.gif;
 public class ColorTable{
 
 	/**
-	 * Amount of RGB colour values in GlobalColorTable
+	 * Amount of RGB colour values in ColorTable
 	 */
 	private final int tableSize;
 	/**
@@ -15,10 +15,9 @@ public class ColorTable{
 	 */
 	private int currentLocation = 0;
 	 /**
-	  * If the {@link com.camelcasing.image.gif.GlobalColorTable#getColorTable() getColorTable} method is called before 
+	  * If the {@link com.camelcasing.image.gif.ColorTable#getColorTable() getColorTable} method is called before 
 	  * the table has a definition for all the allocated colours then remaining spaces will be filled with the color BLACK  
-	  * @param tableSize
-	  * @param colorResolution
+	  * @param tableSize value between 2 and 7 are acceptable.
 	  */
 	public ColorTable(int tableSize){
 		this.tableSize = tableSize;

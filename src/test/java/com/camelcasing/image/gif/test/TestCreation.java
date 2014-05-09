@@ -31,7 +31,7 @@ public class TestCreation{
 	@Test
 	public void writeAndReadFromFile2(){
 		try{
-			BufferedImage image = ImageIO.read(new File("/media/camelcasing/ExtraDrive/Pictures/ollie_window.jpg"));
+			BufferedImage image = ImageIO.read(new File("/media/camelcasing/ExtraDrive/cheryl-cole.jpg"));
 			OctreeColorQuantilizer q = new OctreeColorQuantilizer(image, 256).quantilize();
 			int[] rawInput = q.getQuantilizedInput();
 			int[][] colorPalette = q.getColorPalette();

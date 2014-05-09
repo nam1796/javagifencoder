@@ -33,7 +33,6 @@ public class AniGifTest {
 			BufferedImage i12 = ImageIO.read(new File("/media/camelcasing/ExtraDrive/image13.png"));
 			
 			new CreateGIF(new File("/media/camelcasing/ExtraDrive/helloworld.gif"), i, i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12)
-			.setTimeDelays(20)
 			.createGIF();			
 		}catch(IOException e){
 			logger.debug(e.getMessage());

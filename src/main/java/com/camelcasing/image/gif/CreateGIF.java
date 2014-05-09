@@ -16,6 +16,7 @@ public class CreateGIF{
 		private int timeDelay = 50;
 		private File outputFile;
 		private LogicalScreenDescriptor logicalScreenDescriptor;
+		private ArrayList<ArrayList<Integer>> imageDataBytes;
 		
 		private Logger logger = Logger.getLogger(getClass());
 	
@@ -24,11 +25,12 @@ public class CreateGIF{
 		this.outputFile = outputFile;
 		width = images[0].getWidth();
 		height = images[0].getHeight();
+		imageDataBytes = new ArrayList<ArrayList<Integer>>(images.length);
 	}
 	
 	public boolean createGIF(){
 		logicalScreenDescriptor = createLogicalScreenDescriptor();
-			
+		getImageBytes();
 		writeBytes();
 		return true;
 	}
@@ -39,15 +41,23 @@ public class CreateGIF{
 		return lsd;
 	}
 	
+	private void getImageBytes(){
+		for(int i = 0; i < images.length; i++){
+			imageDataBytes.add(new ImageData(images[i], timeDelay, maxColours, width, height, null)
+			.init()
+			.getImageData());
+		}
+	}
+	
 	private void writeBytes(){
 		try(OutputStream os = new FileOutputStream(outputFile)){
 			for(int i : Headers.getHeader89a()) os.write(i);
 			for(int i : logicalScreenDescriptor.getLogicalScreenDescriptor()) os.write(i);
 			for(int i : new NetscapeApplicationExtension(0).create()) os.write(i);
 			
-//			for(int i = 0; i < imageData.length; i++){
-//				for(int j : imageData[i]) os.write(j);
-//			}
+			for(int i = 0; i < imageDataBytes.size(); i++){
+				for(int j : imageDataBytes.get(i)) os.write(j);
+			}
 			
 			os.write(Headers.getTrailer());
 		}catch(IOException e){

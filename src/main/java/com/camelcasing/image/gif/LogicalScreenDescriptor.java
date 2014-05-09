@@ -1,11 +1,11 @@
 package com.camelcasing.image.gif;
 
 /**
- * Contains 7 bytes,<br />
- * byte 1-2 = width<br />
- * byte 3-4 = height<br />
- * byte 5 = {@link com.camelcasing.image.gif.ScreenDescriptorField}<br />
- * byte 6 = Background colour index<br />
+ * Contains 7 bytes,
+ * byte 1-2 = width
+ * byte 3-4 = height
+ * byte 5 = {@link com.camelcasing.image.gif.ScreenDescriptorField}
+ * byte 6 = Background colour index
  * byte 7 = pixel aspect ratio 
  */
 public class LogicalScreenDescriptor{
@@ -42,7 +42,7 @@ public class LogicalScreenDescriptor{
 	 * @param width The width of the GIF, represented by 2 bytes (Max size of 4095 pixels)
 	 * @param height The height of the GIF, represented by 2 bytes (Max size of 4095 pixels)
 	 * @param packedFields Contains values for, Colour Table flag, Colour Resolution, Sort Flag and ColourTableSize
-	 * @param bgColorIndexIndex into the 'Global Colour Table' for the colour used for pixels on the screen that are not cover by an image. 
+	 * @param bgColorIndex Index into the 'Global Colour Table' for the colour used for pixels on the screen that are not cover by an image. 
 	 * If the 'Global Colour Table Flag' is 0 then this should be 0.
 	 * @param pixelAspectRatio Used on square pixels. formula = Aspect Ratio = (Pixel Aspect Ratio + 16) / 64.
 	 * Widest pixel allowed = 4:1 and Tallest allowed = 1:4. A value of 0 means no aspect ratio information was given.

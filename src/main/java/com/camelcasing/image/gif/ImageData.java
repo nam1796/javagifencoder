@@ -20,8 +20,8 @@ public class ImageData {
 	 * @param image The image that the returning byte represent
 	 * @param timeDelay length of time image is on screen must be between 0 and 65535, maybe overridden by <code>GIFOptions</code>
 	 * @param maxColors maximum amount of colours used in this image, maybe overridden by <code>GIFOptions</code>
-	 * @param width width of the image
-	 * @param height height of the image
+	 * @param width width of the image maybe overridden by <code>GIFOptions</code>
+	 * @param height height of the image maybe overridden by <code>GIFOptions</code>
 	 * @param gifOptions optional specific requirments for the image processing, use null to use defaults {@link com.camelcasing.image.gif.GIFOptions}
 	 */
 	public ImageData(BufferedImage image, int timeDelay, int maxColors, int width, int height, GIFOptions gifOptions){
@@ -31,17 +31,19 @@ public class ImageData {
 		this.maxColors = maxColors;
 		this.timeDelay = timeDelay;
 		this.gifOptions = gifOptions;
-		this.bitSize = getBitsize();
+		//this.bitSize = getBitsize();
+		this.bitSize = 7;
 		imageData = new ArrayList<Integer>();
 	}
 	
-	public void init(){
+	public ImageData init(){
 			if(gifOptions != null) getGIFOptions();
 		quantilizeImage();
 		addGraphicsControlExtensionBytes();
 		addImageDescriptorBytes();
 		addColorTableBytes();
 		addCompressedImageBytes();
+		return this;
 	}
 	
 	private void getGIFOptions(){
@@ -58,11 +60,11 @@ public class ImageData {
 	}
 	
 	private void quantilizeImage(){
-		quantilizer = new OctreeColorQuantilizer(image, maxColors).quantilize();
+		quantilizer = new OctreeColorQuantilizer(image, 256).quantilize();
 	}
 	
 	public void addGraphicsControlExtensionBytes(){
-		int[] graphicsControlExtensionBytes = new GraphicControlExtension(1, false, false, timeDelay, 0).getGraphicControlExtension();
+		int[] graphicsControlExtensionBytes = new GraphicControlExtension(1, false, false, 20, 0).getGraphicControlExtension();
 		for(int i : graphicsControlExtensionBytes) imageData.add(i);
 	}
 	
@@ -78,7 +80,7 @@ public class ImageData {
 		compressor = new LZWCompressor(rawInput, bitSize);
 		
 		int[][] colorPalette = quantilizer.getColorPalette();
-		ColorTable colorTable = new ColorTable(bitSize); //could cause problems
+		ColorTable colorTable = new ColorTable(7); //could cause problems
 			for(int i = 0; i < colorPalette.length; i++){
 				colorTable.addColor(colorPalette[i][0], colorPalette[i][1], colorPalette[i][2]);
 			}

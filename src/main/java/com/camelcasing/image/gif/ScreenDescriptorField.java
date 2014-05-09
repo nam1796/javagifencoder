@@ -26,7 +26,7 @@ public final class ScreenDescriptorField {
 		private final int colorTableSize;
 		
 	/**
-	 * Sets the fields of this class and valitates the input, will throw an {@link java.lang.IllegalArgumentException} if this fails. <br />
+	 * Sets the fields of this class and valitates the input, will throw an {@link java.lang.IllegalArgumentException} if this fails.
 	 * Call create to return the byte representation of these settings.
 	 * 
 	 * @param colorTableFlag true for the existance of global color table
@@ -54,9 +54,9 @@ public final class ScreenDescriptorField {
 	}
 	
 	/**
-	 * Most significant bit contains colorTableFlag<br />
-	 * next 3 bits contain the colorResolution<br />
-	 * next bit is the sortFlag<br >
+	 * Most significant bit contains colorTableFlag
+	 * next 3 bits contain the colorResolution
+	 * next bit is the sortFlag
 	 * final 3 bits represent the colorTableSize
 	 * @return a single byte that incorporates all the settings in the values in the constructor
 	 */

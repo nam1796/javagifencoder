@@ -26,7 +26,7 @@ public class OctreeNode{
 	 * @param r red value
 	 * @param g green value
 	 * @param b blue value
-	 * @return
+	 * @return this
 	 */
 	public OctreeNode addColor(int r, int g, int b){
 		addColor(r, g, b, 1);
@@ -34,9 +34,8 @@ public class OctreeNode{
 	}
 	/**
 	 * 
-	 * @param index
-	 * @return
-	 * @throws NullPointerException if index is less than 0 or greater than 7
+	 * @param index Index of this node in Parents Children
+	 * @return this
 	 */
 	public OctreeNode getChild(int index) throws NullPointerException{
 			if(children[index] == null){
@@ -49,7 +48,6 @@ public class OctreeNode{
 	 * 
 	 * @param index of the child (0-7)
 	 * @return Then Octree node for the given index or null if child does not exist
-	 * @throws <code>IllegalArgumentException</code> if index outside expected range
 	 */
 	public OctreeNode getChildIfExists(int index) throws IllegalArgumentException{
 			if(index < 0 || index > 7){

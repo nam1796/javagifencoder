@@ -15,8 +15,9 @@ public class GIFUtils{
 	
 	/**
 	 * extracts bits of a int to the specified size from a specified offset, will add leading zeros
-	 * @param value
-	 * @param numberOfBitsRequired
+	 * @param value The <code>Integer</code> value to process
+	 * @param numberOfBitsRequired The length the returned String need to be (including zeros)
+	 * @param offset number of bits to exclude ie will return higher order bits
 	 * @return The butchered bits
 	 */
 	public static String getBitsFromInt(int value, int numberOfBitsRequired, int offset){
@@ -39,8 +40,8 @@ public class GIFUtils{
 	
 	/**
 	 * extracts bits of a int to the specified size from a offset of 0, will add leading zeros
-	 * @param value
-	 * @param numberOfBitsRequired
+	 * @param value The <code>Integer</code> value to process
+	 * @param numberOfBitsRequired The length the returned String need to be (including zeros)
 	 * @return The butchered bits
 	 */
 	public static String getBitsFromInt(int value, int numberOfBitsRequired){
@@ -51,7 +52,7 @@ public class GIFUtils{
 	 * Combines 2 integers into a {@link com.camelcasing.image.gif.InputColor InputColor}. Will create an array int[a, b].
 	 * @param a value to be added to index 0.
 	 * @param b value to be added to index 1.
-	 * @return
+	 * @return InputColor with the two values
 	 */
 	public static InputColor simpleColorArray(int a, int b){
 		return new InputColor(new int[] {a, b});
@@ -61,7 +62,7 @@ public class GIFUtils{
 	 * see {@link com.camelcasing.image.gif.GIFUtils#simpleColorArray(int, int) simpleColorArray(int, int)}
 	 * @param a first input values.
 	 * @param b value to be appended to a.
-	 * @return
+	 * @return InputColor with <code>Integer</code> appended to the array
 	 */
 	public static InputColor simpleColorArray(int[] a, int b){
 		int[] c = new int[a.length + 1];

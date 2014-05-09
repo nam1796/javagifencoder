@@ -2,7 +2,7 @@ package com.camelcasing.image.gif;
 
 
 /**
- * Total of 8 Bytes<br />
+ * Total of 8 Bytes
  * This class will throw an {@link java.lang.IllegalArgumentException IllegalArgumentException} if the input values are outside the defined ranges.
  * 
  * @author camelCasing
