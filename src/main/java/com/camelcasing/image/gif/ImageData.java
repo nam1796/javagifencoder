@@ -2,9 +2,12 @@ package com.camelcasing.image.gif;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import org.apache.log4j.Logger;
 
 public class ImageData {
 
+		private Logger logger = Logger.getLogger(getClass());
+	
 		private int timeDelay;
 		private BufferedImage image;
 		private OctreeColorQuantilizer quantilizer;
@@ -15,6 +18,7 @@ public class ImageData {
 		private int bitSize;
 		private LZWCompressor compressor;
 		private GIFOptions gifOptions;
+		private int tempBitSize;
 		
 	/**
 	 * @param image The image that the returning byte represent
@@ -60,16 +64,16 @@ public class ImageData {
 	}
 	
 	private void quantilizeImage(){
-		quantilizer = new OctreeColorQuantilizer(image, 256).quantilize();
+		quantilizer = new OctreeColorQuantilizer(image, maxColors).quantilize();
 	}
 	
 	public void addGraphicsControlExtensionBytes(){
-		int[] graphicsControlExtensionBytes = new GraphicControlExtension(1, false, false, 20, 0).getGraphicControlExtension();
+		int[] graphicsControlExtensionBytes = new GraphicControlExtension(1, false, false, timeDelay, 0).getGraphicControlExtension();
 		for(int i : graphicsControlExtensionBytes) imageData.add(i);
 	}
 	
 	public void addImageDescriptorBytes(){
-		ImageDescriptorFields imageDescriptorFields = new ImageDescriptorFields(true, false, false, 7);
+		ImageDescriptorFields imageDescriptorFields = new ImageDescriptorFields(true, false, false, 7); //change size of local colorTable
 		ImageDescriptor imageDescriptor = new ImageDescriptor(0, 0, width, height, imageDescriptorFields);
 		int[] imageDescriptorBytes = imageDescriptor.getImageDescriptor();
 			for(int i : imageDescriptorBytes) imageData.add(i);
@@ -77,10 +81,9 @@ public class ImageData {
 		
 	public void addColorTableBytes(){
 		int[] rawInput = quantilizer.getQuantilizedInput();
-		compressor = new LZWCompressor(rawInput, bitSize);
 		
 		int[][] colorPalette = quantilizer.getColorPalette();
-		ColorTable colorTable = new ColorTable(7); //could cause problems
+		ColorTable colorTable = new ColorTable(7); //change this to be adaptable
 			for(int i = 0; i < colorPalette.length; i++){
 				colorTable.addColor(colorPalette[i][0], colorPalette[i][1], colorPalette[i][2]);
 			}
@@ -90,11 +93,14 @@ public class ImageData {
 			}
 		int[] colors = colorTable.getColorTable();
 			for(int i : colors) imageData.add(i);
+		tempBitSize = GIFUtils.numberOfBitsRequired(colorTable.getColorTableSize());
+		logger.debug("bitSize = " + bitSize + "\ntempBitSize = " + tempBitSize);
+		compressor = new LZWCompressor(rawInput, tempBitSize);
 	}
 	
 	public void addCompressedImageBytes(){
 		ArrayList<Integer> packagedBytes = compressor.getPackageBytes();
-		imageData.add(bitSize);
+		imageData.add(tempBitSize);
 			for(int i : packagedBytes) imageData.add(i);
 		imageData.add(0);
 	}

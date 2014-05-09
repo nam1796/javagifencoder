@@ -25,7 +25,7 @@ public class CreateGIF{
 		this.outputFile = outputFile;
 		width = images[0].getWidth();
 		height = images[0].getHeight();
-		imageDataBytes = new ArrayList<ArrayList<Integer>>(images.length);
+		imageDataBytes = new ArrayList<ArrayList<Integer>>();
 	}
 	
 	public boolean createGIF(){
@@ -47,6 +47,9 @@ public class CreateGIF{
 			.init()
 			.getImageData());
 		}
+		
+		logger.debug("image.length = " + images.length);
+		logger.debug("imageDataBytes.size() = " + imageDataBytes.size());
 	}
 	
 	private void writeBytes(){
