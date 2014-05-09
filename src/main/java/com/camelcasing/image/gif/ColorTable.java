@@ -1,6 +1,6 @@
 package com.camelcasing.image.gif;
 
-public class GlobalColorTable{
+public class ColorTable{
 
 	/**
 	 * Amount of RGB colour values in GlobalColorTable
@@ -20,7 +20,7 @@ public class GlobalColorTable{
 	  * @param tableSize
 	  * @param colorResolution
 	  */
-	public GlobalColorTable(int tableSize){
+	public ColorTable(int tableSize){
 		this.tableSize = tableSize;
 		
 		calculateTableSize();

@@ -12,6 +12,11 @@ package com.camelcasing.image.gif;
 public class GraphicControlExtension{
 
 		/**
+		 * value of 0 mean no disposal specified
+		 * value of 1 means Do not dispose, graphics to be left in place
+		 * value of 2 means restore to background colour
+		 * value of 3 means restore to the previous image
+		 * 
 		 * should be 1 for an animated GIF
 		 */
 		private int disposalMethod;
@@ -86,7 +91,7 @@ public class GraphicControlExtension{
 	 * @throws IllegalArgumentException If DisposalMethod < 0 / > 7 or TimeDelay < 0 / > 65535
 	 */
 	private void validateInput() throws IllegalArgumentException{
-		if(disposalMethod < 0 || disposalMethod > 7) throw new IllegalArgumentException("DisposalMethod must be between 0 and 7");
+		if(disposalMethod < 0 || disposalMethod > 3) throw new IllegalArgumentException("DisposalMethod must be between 0 and 3");
 		if(timeDelay < 0 || timeDelay > 65535) throw new IllegalArgumentException("Time Delay must be between 0 and 65535");
 	}
 	

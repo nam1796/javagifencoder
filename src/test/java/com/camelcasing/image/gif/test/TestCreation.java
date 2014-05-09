@@ -13,12 +13,11 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import com.camelcasing.image.gif.GIFUtils;
-import com.camelcasing.image.gif.GlobalColorTable;
+import com.camelcasing.image.gif.ColorTable;
 import com.camelcasing.image.gif.GraphicControlExtension;
 import com.camelcasing.image.gif.Headers;
 import com.camelcasing.image.gif.ImageDescriptor;
 import com.camelcasing.image.gif.ImageDescriptorFields;
-import com.camelcasing.image.gif.InputImage;
 import com.camelcasing.image.gif.LZWCompressor;
 import com.camelcasing.image.gif.LogicalScreenDescriptor;
 import com.camelcasing.image.gif.NetscapeApplicationExtension;
@@ -52,7 +51,7 @@ public class TestCreation{
 			ScreenDescriptorField sdf = new ScreenDescriptorField(true, 1, false, colorTableSize);
 			LogicalScreenDescriptor lsd = new LogicalScreenDescriptor(width, height, sdf, 0, 0);
 
-			GlobalColorTable ct = new GlobalColorTable(sdf.getColorTableSize());
+			ColorTable ct = new ColorTable(sdf.getColorTableSize());
 				for(int i = 0; i < colorPalette.length; i++){
 					ct.addColor(colorPalette[i][0], colorPalette[i][1], colorPalette[i][2]);
 				}
@@ -220,7 +219,7 @@ public class TestCreation{
 			ScreenDescriptorField sdf = new ScreenDescriptorField(true, 1, false, 1);
 			LogicalScreenDescriptor lsd = new LogicalScreenDescriptor(is, is, sdf, 0, 0);
 
-			GlobalColorTable ct = new GlobalColorTable(sdf.getColorTableSize());
+			ColorTable ct = new ColorTable(sdf.getColorTableSize());
 			ct.addColor(255, 255, 255);//white --> 0
 			ct.addColor(255, 0, 0);//red --> 1
 			ct.addColor(00, 00, 255); //blue --> 2
