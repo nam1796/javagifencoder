@@ -18,6 +18,7 @@ import com.camelcasing.image.gif.GraphicControlExtension;
 import com.camelcasing.image.gif.Headers;
 import com.camelcasing.image.gif.ImageDescriptor;
 import com.camelcasing.image.gif.ImageDescriptorFields;
+import com.camelcasing.image.gif.InputImage;
 import com.camelcasing.image.gif.LZWCompressor;
 import com.camelcasing.image.gif.LogicalScreenDescriptor;
 import com.camelcasing.image.gif.NetscapeApplicationExtension;
@@ -31,8 +32,7 @@ public class TestCreation{
 	@Test
 	public void writeAndReadFromFile2(){
 		try{
-			
-			BufferedImage image = ImageIO.read(new File("/media/camelcasing/ExtraDrive/ricci.jpg"));
+			BufferedImage image = ImageIO.read(new File("/media/camelcasing/ExtraDrive/Pictures/ollie_window.jpg"));
 			OctreeColorQuantilizer q = new OctreeColorQuantilizer(image, 256).quantilize();
 			int[] rawInput = q.getQuantilizedInput();
 			int[][] colorPalette = q.getColorPalette();
@@ -79,7 +79,7 @@ public class TestCreation{
 			
 			ArrayList<Integer> packagedBytes = compressor.getPackageBytes();			
 			
-			OutputStream os = new FileOutputStream(new File("/media/camelcasing/ExtraDrive/QuantilizedGif.gif"));
+			OutputStream os = new FileOutputStream(new File("/media/camelcasing/ExtraDrive/QuantilizedGif2.gif"));
 				
 			for(int j : header) os.write(j);
 			for(int j : lsdBytes) os.write(j);
@@ -101,7 +101,6 @@ public class TestCreation{
 			System.out.println(Integer.toHexString(i));
 		}
 	}
-	
 	
 	public void writeAndReadFromFile3(){
 		try{
