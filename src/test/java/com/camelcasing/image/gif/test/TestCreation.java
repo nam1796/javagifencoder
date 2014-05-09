@@ -78,7 +78,7 @@ public class TestCreation{
 			
 			ArrayList<Integer> packagedBytes = compressor.getPackageBytes();			
 			
-			OutputStream os = new FileOutputStream(new File("/media/camelcasing/ExtraDrive/QuantilizedGif2.gif"));
+			OutputStream os = new FileOutputStream(new File("/media/camelcasing/ExtraDrive/QuantilizedGif.gif"));
 				
 			for(int j : header) os.write(j);
 			for(int j : lsdBytes) os.write(j);
@@ -100,6 +100,7 @@ public class TestCreation{
 			System.out.println(Integer.toHexString(i));
 		}
 	}
+	
 	
 	public void writeAndReadFromFile3(){
 		try{
