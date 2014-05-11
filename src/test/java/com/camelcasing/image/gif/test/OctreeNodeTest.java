@@ -21,21 +21,21 @@ public class OctreeNodeTest{
 		public void colourCount(){
 			OctreeNode otn = new OctreeNode(null, 0);
 			OctreeNode child = otn.getChild(5)
-					.addColor(12, 12, 12)
-					.addColor(12, 12, 12);
-			assertEquals(2, child.getColorCount());
+					.addColour(12, 12, 12)
+					.addColour(12, 12, 12);
+			assertEquals(2, child.getColourCount());
 			assertEquals(12, child.getBlue());
 		}
 		
 		@Test
 		public void mergeNodeUp(){
 			OctreeNode otn = new OctreeNode(null, 0);
-			otn.addColor(24,  24,  24);
+			otn.addColour(24,  24,  24);
 			OctreeNode child = otn.getChild(5)
-					.addColor(12, 12, 12)
-					.addColor(12, 12, 12);
+					.addColour(12, 12, 12)
+					.addColour(12, 12, 12);
 			child.mergeUp();
-			assertEquals(3, otn.getColorCount());
+			assertEquals(3, otn.getColourCount());
 			assertEquals(16, otn.getBlue());
 			assertNull(otn.getChildIfExists(5));
 		}

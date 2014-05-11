@@ -24,7 +24,7 @@ public class LogicalScreenDescriptor{
 	 * Index into the 'Global Colour Table' for the colour used for pixels on the screen that are not cover by an image. 
 	 * If the 'Global Colour Table Flag' is 0 then this should be 0.
 	 */
-	private int bgColorIndex;
+	private int bgColourIndex;
 	/**
 	 * Used on square pixels. formula = Aspect Ratio = (Pixel Aspect Ratio + 16) / 64.
 	 * Widest pixel allowed = 4:1 and Tallest allowed = 1:4. A value of 0 means no aspect ratio information was given.
@@ -42,16 +42,16 @@ public class LogicalScreenDescriptor{
 	 * @param width The width of the GIF, represented by 2 bytes (Max size of 4095 pixels)
 	 * @param height The height of the GIF, represented by 2 bytes (Max size of 4095 pixels)
 	 * @param packedFields Contains values for, Colour Table flag, Colour Resolution, Sort Flag and ColourTableSize
-	 * @param bgColorIndex Index into the 'Global Colour Table' for the colour used for pixels on the screen that are not cover by an image. 
+	 * @param bgColourIndex Index into the 'Global Colour Table' for the colour used for pixels on the screen that are not cover by an image. 
 	 * If the 'Global Colour Table Flag' is 0 then this should be 0.
 	 * @param pixelAspectRatio Used on square pixels. formula = Aspect Ratio = (Pixel Aspect Ratio + 16) / 64.
 	 * Widest pixel allowed = 4:1 and Tallest allowed = 1:4. A value of 0 means no aspect ratio information was given.
 	 */
-	public LogicalScreenDescriptor(int width, int height, ScreenDescriptorField packedFields, int bgColorIndex, int pixelAspectRatio){
+	public LogicalScreenDescriptor(int width, int height, ScreenDescriptorField packedFields, int bgColourIndex, int pixelAspectRatio){
 		this.width = width;
 		this.height = height;
 		this.packedFields = packedFields;
-		this.bgColorIndex = bgColorIndex;
+		this.bgColourIndex = bgColourIndex;
 		this.pixelAspectRatio = pixelAspectRatio;
 			validate();
 			create();
@@ -64,8 +64,8 @@ public class LogicalScreenDescriptor{
 	private void validate(){
 		if(width > 4095 || width < 1) throw new IllegalArgumentException("Width exceeds limit of 4095 or is less then 1");
 		if(height > 4095 || height < 1) throw new IllegalArgumentException("Height exceeds limit of 4095 oe is less then 1");
-		if(bgColorIndex > Math.pow(2, packedFields.getColorTableSize() + 1) || bgColorIndex < 0){
-			throw new IllegalArgumentException("bgColorIndex is outside of range designated in colorTableSize field");
+		if(bgColourIndex > Math.pow(2, packedFields.getColourTableSize() + 1) || bgColourIndex < 0){
+			throw new IllegalArgumentException("bgColourIndex is outside of range designated in colourTableSize field");
 		}
 		if(pixelAspectRatio > 255 | pixelAspectRatio < 0) throw new IllegalArgumentException("PixelAspectRatio must be with range of 0-255");
 	}
@@ -85,7 +85,7 @@ public class LogicalScreenDescriptor{
 		logicalScreenDescriptor[2] = height1;
 		logicalScreenDescriptor[3] = height2;
 		logicalScreenDescriptor[4] = packedFields.create();
-		logicalScreenDescriptor[5] = bgColorIndex;
+		logicalScreenDescriptor[5] = bgColourIndex;
 		logicalScreenDescriptor[6] = pixelAspectRatio;
 	}
 	

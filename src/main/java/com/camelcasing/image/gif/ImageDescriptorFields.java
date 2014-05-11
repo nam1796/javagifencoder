@@ -3,9 +3,9 @@ package com.camelcasing.image.gif;
 public class ImageDescriptorFields{
 
 		/**
-		 * True if image contains a Local Color Table
+		 * True if image contains a Local Colour Table
 		 */
-		private final boolean localColorTableFlag;
+		private final boolean localColourTableFlag;
 		
 		/**
 		 * True if image is interlaced (uses four-pass interlace pattern)
@@ -21,29 +21,29 @@ public class ImageDescriptorFields{
 		 * limited to 3 bits (value of 7), is the max number of colours (to calculate raise 2 to the power of this 
 		 * value + 1 eg a input 7 means 2 raised to the power of 8 which equals 256)
 		 */
-		private final int sizeOfLocalColorTable;
+		private final int sizeOfLocalColourTable;
 	
 	/**
-	 * @param localColorTableFlag True if image contains a Local Color Table
+	 * @param localColourTableFlag True if image contains a Local Colour Table
 	 * @param interlaceFlag True if image is interlaced (uses four-pass interlace pattern)
 	 * @param sortFlag True if image is interlaced (uses four-pass interlace pattern)
-	 * @param sizeOfLocalColorTable limited to 3 bits (value of 7), is the max number of colours (to calculate raise 2 to the power of this 
+	 * @param sizeOfLocalColourTable limited to 3 bits (value of 7), is the max number of colours (to calculate raise 2 to the power of this 
 	 * 		value + 1 eg a input 7 means 2 raised to the power of 8 which equals 256)
 	 */
-	public ImageDescriptorFields(boolean localColorTableFlag, boolean interlaceFlag, boolean sortFlag, int sizeOfLocalColorTable){
-		this.localColorTableFlag = localColorTableFlag;
+	public ImageDescriptorFields(boolean localColourTableFlag, boolean interlaceFlag, boolean sortFlag, int sizeOfLocalColourTable){
+		this.localColourTableFlag = localColourTableFlag;
 		this.interlaceFlag = interlaceFlag;
 		this.sortFlag = sortFlag;
-		this.sizeOfLocalColorTable = sizeOfLocalColorTable;
+		this.sizeOfLocalColourTable = sizeOfLocalColourTable;
 		validate();
 	}
 	
 	/**
-	 * @return True/False if input was validated, checks the size of the colorTable is between 0 and 7
+	 * @return True/False if input was validated, checks the size of the colourTable is between 0 and 7
 	 * @throws IllegalArgumentException
 	 */
 	private boolean validate() throws IllegalArgumentException{
-		if(sizeOfLocalColorTable < 0 || sizeOfLocalColorTable > 7) throw new IllegalArgumentException("colorTableSize must be between 0 and 7");
+		if(sizeOfLocalColourTable < 0 || sizeOfLocalColourTable > 7) throw new IllegalArgumentException("colourTableSize must be between 0 and 7");
 		return true;
 	}
 	
@@ -52,11 +52,11 @@ public class ImageDescriptorFields{
 	 */
 	public int create(){
 		StringBuilder sBuilder = new StringBuilder(6);
-		sBuilder.append((localColorTableFlag ? '1' : '0'));
+		sBuilder.append((localColourTableFlag ? '1' : '0'));
 		sBuilder.append((interlaceFlag ? '1' : '0'));
 		sBuilder.append((sortFlag ? '1' : '0'));
 		sBuilder.append("00");
-		sBuilder.append(GIFUtils.getBitsFromInt(sizeOfLocalColorTable, 3));
+		sBuilder.append(GIFUtils.getBitsFromInt(sizeOfLocalColourTable, 3));
 		return Integer.valueOf(sBuilder.toString(), 2);
 	}
 }

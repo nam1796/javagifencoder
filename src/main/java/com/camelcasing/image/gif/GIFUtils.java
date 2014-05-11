@@ -49,35 +49,39 @@ public class GIFUtils{
 	}
 	
 	/**
-	 * Combines 2 integers into a {@link com.camelcasing.image.gif.InputColor InputColor}. Will create an array int[a, b].
+	 * Combines 2 integers into a {@link com.camelcasing.image.gif.InputColour InputColour}. Will create an array int[a, b].
 	 * @param a value to be added to index 0.
 	 * @param b value to be added to index 1.
-	 * @return InputColor with the two values
+	 * @return InputColour with the two values
 	 */
-	public static InputColor simpleColorArray(int a, int b){
-		return new InputColor(new int[] {a, b});
+	public static InputColour simpleColourArray(int a, int b){
+		return new InputColour(new int[] {a, b});
 	}
 	
 	/**
-	 * see {@link com.camelcasing.image.gif.GIFUtils#simpleColorArray(int, int) simpleColorArray(int, int)}
+	 * see {@link com.camelcasing.image.gif.GIFUtils#simpleColourArray(int, int) simpleColourArray(int, int)}
 	 * @param a first input values.
 	 * @param b value to be appended to a.
-	 * @return InputColor with <code>Integer</code> appended to the array
+	 * @return InputColour with <code>Integer</code> appended to the array
 	 */
-	public static InputColor simpleColorArray(int[] a, int b){
+	public static InputColour simpleColourArray(int[] a, int b){
 		int[] c = new int[a.length + 1];
 		System.arraycopy(a, 0, c, 0, a.length);
 		c[c.length - 1] = b;
-		return new InputColor(c);
+		return new InputColour(c);
 	}
 	
 	/**
-	 * @param colorTableSize Square root of the Size of the <code>Global Color Table</code>, minus one 
+	 * @param colourTableSize Square root of the Size of the <code>Global Colour Table</code>, minus one 
 	 * 		(Same value as entered into {@link com.camelcasing.image.gif.ScreenDescriptorField ScreenDescriptorField}) 
 	 * @return Number of bit required to represent the maximum size of the input parameter 
 	 */
-	public static int numberOfBitsRequired(int colorTableSize){
-		int max = (int)((Math.pow(2, colorTableSize + 1)) - 1);
+	public static int numberOfBitsRequired(int colourTableSize){
+		int max = (int)((Math.pow(2, colourTableSize + 1)) - 1);
 		return((Integer.toBinaryString(max)).length());
+	}
+	
+	public static int getBitsRequiredFromDecimal(int number){
+		return((int)((Math.log(number)) / Math.log(2)) - 1);
 	}
 }

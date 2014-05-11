@@ -3,7 +3,7 @@ package com.camelcasing.image.gif.test;
 import org.junit.Test;
 
 import com.camelcasing.image.gif.GIFUtils;
-import com.camelcasing.image.gif.InputColor;
+import com.camelcasing.image.gif.InputColour;
 import com.camelcasing.image.gif.LZWCompressor;
 
 import static org.junit.Assert.assertEquals;
@@ -88,13 +88,13 @@ public class UtilTest {
 	
 	@Test																														
 	public void combineTest1(){																									
-		InputColor color1 = new InputColor(new int[]{20, 20, 20});																															
-		assertEquals(new InputColor(new int[]{20, 20, 20, 0}), GIFUtils.simpleColorArray(color1.getColor(), 0));					
+		InputColour color1 = new InputColour(new int[]{20, 20, 20});																															
+		assertEquals(new InputColour(new int[]{20, 20, 20, 0}), GIFUtils.simpleColourArray(color1.getColour(), 0));					
 	}																															
 	
 	@Test																														
 	public void combineTest2(){																																							
-		assertEquals(new InputColor(new int[]{16, 20}), GIFUtils.simpleColorArray(16, 20));				
+		assertEquals(new InputColour(new int[]{16, 20}), GIFUtils.simpleColourArray(16, 20));				
 	}		
 	
 	@Test

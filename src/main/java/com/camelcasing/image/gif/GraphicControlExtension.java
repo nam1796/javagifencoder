@@ -33,12 +33,12 @@ public class GraphicControlExtension{
 		 */
 		private int timeDelay;
 		/**
-		 * index (in active <code>Color Table</code> of the colour to use as a transparent pixel 
+		 * index (in active <code>Colour Table</code> of the colour to use as a transparent pixel 
 		 */
 		private int transparencyIndex;
 		/**
 		 * One byte that contains (most significant bit first)<br />
-		 * 1) Transparent Color Flag (1 bit)<br />
+		 * 1) Transparent Colour Flag (1 bit)<br />
 		 * 2) User Input Flag (1 bit)<br />
 		 * 3) Disposal Method (3 bits)<br />
 		 * 4) Reserved for future use (3 bits)
@@ -54,7 +54,7 @@ public class GraphicControlExtension{
 	 * @param userInputFlag hard to imagine a case when this would not be 0
 	 * @param transparencyFlag true if GIF is using transparency
 	 * @param timeDelay must be between 0 and 65535
-	 * @param transparencyIndex index (in active <code>Color Table</code> of the colour to use as a transparent pixel 
+	 * @param transparencyIndex index (in active <code>Colour Table</code> of the colour to use as a transparent pixel 
 	 */
 	public GraphicControlExtension(int disposalMethod, boolean userInputFlag, boolean transparencyFlag, int timeDelay, int transparencyIndex){
 		this.disposalMethod = disposalMethod;

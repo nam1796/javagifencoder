@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
-public class LZWCompressor implements ImageCompressor{
+public class LZWCompressor2 implements ImageCompressor{
 	
 	private Logger logger = Logger.getLogger(getClass());
 
@@ -25,7 +25,7 @@ public class LZWCompressor implements ImageCompressor{
 	private InputColour found = null;
 	private ArrayList<Integer> packagedBytes;
 
-	public LZWCompressor(int[] rawData, int bitSize) {
+	public LZWCompressor2(int[] rawData, int bitSize) {
 		DICINCREMENT = ((int) Math.pow(2, bitSize)) + 2;
 		STARTBITSIZE = bitSize;
 		this.rawData = rawData;

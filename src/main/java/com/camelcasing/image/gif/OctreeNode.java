@@ -13,7 +13,7 @@ public class OctreeNode{
 		this.index = index;
 	}
 
-	public OctreeNode addColor(int r, int g, int b, int count){
+	public OctreeNode addColour(int r, int g, int b, int count){
 		this.count += count;
 		red += r;
 		green += g;
@@ -28,8 +28,8 @@ public class OctreeNode{
 	 * @param b blue value
 	 * @return this
 	 */
-	public OctreeNode addColor(int r, int g, int b){
-		addColor(r, g, b, 1);
+	public OctreeNode addColour(int r, int g, int b){
+		addColour(r, g, b, 1);
 		return this;
 	}
 	/**
@@ -57,7 +57,7 @@ public class OctreeNode{
 	}
 	
 	public void mergeUp(){
-		parent.addColor(red, green, blue, count);
+		parent.addColour(red, green, blue, count);
 		parent.kill(index);
 	}
 	
@@ -69,7 +69,7 @@ public class OctreeNode{
 		return parent;
 	}
 	
-	public int getColorCount(){
+	public int getColourCount(){
 		return count;
 	}
 

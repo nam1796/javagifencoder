@@ -1,9 +1,7 @@
 package com.camelcasing.image.gif;
 
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.apache.log4j.Logger;
 
@@ -12,20 +10,26 @@ public class CreateGIF{
 		private int width;
 		private int height;
 		private int maxColours = 256;
-		private BufferedImage[] images;
-		private int timeDelay = 50;
+		private InputImage[] images;
+		private int timeDelay = 20;
 		private File outputFile;
 		private LogicalScreenDescriptor logicalScreenDescriptor;
 		private ArrayList<ArrayList<Integer>> imageDataBytes;
+		private GIFOptions[] gifOptions;
 		
 		private Logger logger = Logger.getLogger(getClass());
 	
-	public CreateGIF(File outputFile, BufferedImage... bufferedImages){
-		this.images = bufferedImages;
+	public CreateGIF(File outputFile, int width, int height, InputImage... images){
+		this.images = images;
 		this.outputFile = outputFile;
-		width = images[0].getWidth();
-		height = images[0].getHeight();
+		this.width = width;
+		this.height = height;
 		imageDataBytes = new ArrayList<ArrayList<Integer>>();
+		gifOptions = new GIFOptions[images.length];
+	}
+	
+	public CreateGIF(File outputFile, InputImage... images){
+		this(outputFile, images[0].getWidth(), images[0].getHeight(), images);
 	}
 	
 	public boolean createGIF(){
@@ -43,7 +47,7 @@ public class CreateGIF{
 	
 	private void getImageBytes(){
 		for(int i = 0; i < images.length; i++){
-			imageDataBytes.add(new ImageData(images[i], timeDelay, maxColours, width, height, null)
+			imageDataBytes.add(new ImageData(images[i], timeDelay, maxColours, width, height, gifOptions[i])
 			.init()
 			.getImageData());
 		}
@@ -66,6 +70,11 @@ public class CreateGIF{
 		}catch(IOException e){
 			logger.fatal("Failed to write bytes to file\n" + e.getMessage());
 		}
+	}
+	
+	public CreateGIF addGIFOptions(GIFOptions go, int index){
+		gifOptions[index] = go;
+		return this;
 	}
 	
 	public CreateGIF setMaxColours(int maxColours) {

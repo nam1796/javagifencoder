@@ -1,6 +1,5 @@
 package com.camelcasing.image.gif.test;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -13,15 +12,17 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import com.camelcasing.image.gif.GIFUtils;
-import com.camelcasing.image.gif.ColorTable;
+import com.camelcasing.image.gif.ColourTable;
 import com.camelcasing.image.gif.GraphicControlExtension;
 import com.camelcasing.image.gif.Headers;
 import com.camelcasing.image.gif.ImageDescriptor;
 import com.camelcasing.image.gif.ImageDescriptorFields;
+import com.camelcasing.image.gif.InputImage;
+import com.camelcasing.image.gif.InputBufferedImage;
 import com.camelcasing.image.gif.LZWCompressor;
 import com.camelcasing.image.gif.LogicalScreenDescriptor;
 import com.camelcasing.image.gif.NetscapeApplicationExtension;
-import com.camelcasing.image.gif.OctreeColorQuantilizer;
+import com.camelcasing.image.gif.OctreeColourQuantilizer;
 import com.camelcasing.image.gif.ScreenDescriptorField;
 
 public class TestCreation{
@@ -31,10 +32,10 @@ public class TestCreation{
 	@Test
 	public void writeAndReadFromFile2(){
 		try{
-			BufferedImage image = ImageIO.read(new File("/media/camelcasing/ExtraDrive/cheryl-cole.jpg"));
-			OctreeColorQuantilizer q = new OctreeColorQuantilizer(image, 256).quantilize();
+			InputImage image = new InputBufferedImage(ImageIO.read(new File("/media/camelcasing/ExtraDrive/simple.png")));
+			OctreeColourQuantilizer q = new OctreeColourQuantilizer(image, 256).quantilize();
 			int[] rawInput = q.getQuantilizedInput();
-			int[][] colorPalette = q.getColorPalette();
+			int[][] colorPalette = q.getColourPalette();
 			
 			logger.debug("colorPalette.length = " + colorPalette.length);
 			logger.debug("rawInput.length = " + rawInput.length);
@@ -51,17 +52,17 @@ public class TestCreation{
 			ScreenDescriptorField sdf = new ScreenDescriptorField(true, 1, false, colorTableSize);
 			LogicalScreenDescriptor lsd = new LogicalScreenDescriptor(width, height, sdf, 0, 0);
 
-			ColorTable ct = new ColorTable(sdf.getColorTableSize());
+			ColourTable ct = new ColourTable(sdf.getColourTableSize());
 				for(int i = 0; i < colorPalette.length; i++){
-					ct.addColor(colorPalette[i][0], colorPalette[i][1], colorPalette[i][2]);
+					ct.addColour(colorPalette[i][0], colorPalette[i][1], colorPalette[i][2]);
 				}
 				
-			logger.debug("globalColorTableSize = " + ct.getColorTableSize());
+			logger.debug("globalColorTableSize = " + ct.getColourTableSize());
 				
 			int extraColor = (int)Math.pow(2, colorTableSize + 1);
 			logger.debug("extraColor = " + extraColor);
 				for(int i = colorPalette.length; i < extraColor; i++){
-					ct.addColor(0,  0,  0);
+					ct.addColour(0,  0,  0);
 					logger.debug("ExtraColor added");
 				}
 			
@@ -70,13 +71,13 @@ public class TestCreation{
 			
 			int[] header = Headers.getHeader89a();
 			int[] lsdBytes = lsd.getLogicalScreenDescriptor();
-			int[] globalColorTable = ct.getColorTable();
+			int[] globalColorTable = ct.getColourTable();
 			int[] imageDescriptor = id.getImageDescriptor();
-			int bitSize = GIFUtils.numberOfBitsRequired(ct.getColorTableSize());
+			int bitSize = GIFUtils.numberOfBitsRequired(ct.getColourTableSize());
 			
 			LZWCompressor compressor = new LZWCompressor(rawInput, bitSize);
 			
-			ArrayList<Integer> packagedBytes = compressor.getPackageBytes();			
+			ArrayList<Integer> packagedBytes = compressor.getPackagedBytes();			
 			
 			OutputStream os = new FileOutputStream(new File("/media/camelcasing/ExtraDrive/QuantilizedGif.gif"));
 				
@@ -220,18 +221,18 @@ public class TestCreation{
 			ScreenDescriptorField sdf = new ScreenDescriptorField(true, 1, false, 1);
 			LogicalScreenDescriptor lsd = new LogicalScreenDescriptor(is, is, sdf, 0, 0);
 
-			ColorTable ct = new ColorTable(sdf.getColorTableSize());
-			ct.addColor(255, 255, 255);//white --> 0
-			ct.addColor(255, 0, 0);//red --> 1
-			ct.addColor(00, 00, 255); //blue --> 2
-			ct.addColor(255, 255, 255);//white --> 3
+			ColourTable ct = new ColourTable(sdf.getColourTableSize());
+			ct.addColour(255, 255, 255);//white --> 0
+			ct.addColour(255, 0, 0);//red --> 1
+			ct.addColour(00, 00, 255); //blue --> 2
+			ct.addColour(255, 255, 255);//white --> 3
 			
 			ImageDescriptorFields idf = new ImageDescriptorFields(false, false, false, 0);
 			ImageDescriptor id = new ImageDescriptor(0, 0, is, is, idf);
 			
 			int[] header = Headers.getHeader89a();
 			int[] lsdBytes = lsd.getLogicalScreenDescriptor();
-			int[] globalColorTable = ct.getColorTable();
+			int[] globalColorTable = ct.getColourTable();
 			
 			NetscapeApplicationExtension appExtension = new NetscapeApplicationExtension(0);
 			int[] appExtensionBytes = appExtension.create();
@@ -245,10 +246,10 @@ public class TestCreation{
 			int[] imageDescriptor = id.getImageDescriptor();
 			int bitSize = 2;
 			LZWCompressor compressor = new LZWCompressor(rawInput, bitSize);
-			ArrayList<Integer> packagedBytes = compressor.getPackageBytes();	
+			ArrayList<Integer> packagedBytes = compressor.getPackagedBytes();	
 			
 			LZWCompressor compressor2 = new LZWCompressor(rawInput2, bitSize);
-			ArrayList<Integer> packagedBytes2 = compressor2.getPackageBytes();
+			ArrayList<Integer> packagedBytes2 = compressor2.getPackagedBytes();
 			
 			OutputStream os = new FileOutputStream(new File("/media/camelcasing/ExtraDrive/AnimatedGIF.gif"));
 				

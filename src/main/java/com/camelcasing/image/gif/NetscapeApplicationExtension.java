@@ -5,6 +5,9 @@ public class NetscapeApplicationExtension{
 	private int iterations;
 	private int[] ext;
 
+	/**
+	 * @param iterations Must be between 0 and 65535 (0 for infinite)
+	 */
 	public NetscapeApplicationExtension(int iterations){
 		this.iterations = iterations;
 		ext = new int[19];
