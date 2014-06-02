@@ -68,22 +68,22 @@ public class UtilTest {
 	
 	@Test
 	public void bitsRequired(){
-		assertEquals(2, GIFUtils.numberOfBitsRequired(1));
+		assertEquals(1, GIFUtils.numberOfBitsRequired(1));
 	}
 	
 	@Test
 	public void bitsRequired2(){
-		assertEquals(3, GIFUtils.numberOfBitsRequired(2));
+		assertEquals(2, GIFUtils.numberOfBitsRequired(2));
 	}
 	
 	@Test
 	public void bitsRequired3(){
-		assertEquals(4, GIFUtils.numberOfBitsRequired(3));
+		assertEquals(2, GIFUtils.numberOfBitsRequired(3));
 	}
 	
 	@Test
 	public void bitsRequired4(){
-		assertEquals(8, GIFUtils.numberOfBitsRequired(7));
+		assertEquals(3, GIFUtils.numberOfBitsRequired(7));
 	}
 	
 	@Test																														

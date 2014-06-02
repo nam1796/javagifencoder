@@ -1,7 +1,7 @@
 package com.camelcasing.image.gif;
 
 /**
- * @author camelcasing
+ * @author Philip Teclaff
  * @since 1.0
  */
 public class ColourTable{

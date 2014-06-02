@@ -11,33 +11,34 @@ public class GIFOptions {
 		private String memeText = null;
 		private int textLocation = 1;
 		
-		public enum MemeLocation {TOP, LEFT, BOTTOM, RIGHT};
+		public enum MemeLocation {TOP, BOTTOM, CENTRE};
 		
 	/**
 	 * @param l
 	 */
-	public void setTextLocation(MemeLocation l){
+	public GIFOptions setMemeLocation(MemeLocation l){
 		switch(l){
-		case BOTTOM: textLocation = 1;
-		break;
-		case TOP: textLocation = 2;
-		break;
-		case RIGHT: textLocation = 3;
-		break;
-		case LEFT: textLocation = 4;
-		break;
+			case BOTTOM: textLocation = 1;
+		return this;
+			case TOP: textLocation = 2;
+		return this;
+			case CENTRE: textLocation = 3;
+		return this;
+			default:
+		return this;
 		}
 	}
 	
 	/**
 	 * @return
 	 */
-	public int getTextLocation(){
+	public int getMemeLocation(){
 		return textLocation;
 	}
 		
-	public void setMemeText(String s){
+	public GIFOptions setMemeText(String s){
 		memeText = s;
+		return this;
 	}
 	
 	public String getMemeText(){

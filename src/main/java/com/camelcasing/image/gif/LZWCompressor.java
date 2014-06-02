@@ -136,10 +136,8 @@ public class LZWCompressor implements ImageCompressor{
 		logger.debug("finalBlockSize = " + finalBlockSize);
 		
 		int i = 0;
-		int byteInCount = 0;
 		try{
 			for (i = s.length();; i -= 8){
-				byteInCount++;
 				packagedBytes.add(Integer.valueOf(s.substring(i - 8, i), 2));
 			}
 		}catch (StringIndexOutOfBoundsException e) {
@@ -147,10 +145,9 @@ public class LZWCompressor implements ImageCompressor{
 				while (sb.length() != 8) {
 					sb.insert(0, '0');
 				}
-				byteInCount++;
 			packagedBytes.add(Integer.valueOf(sb.toString(), 2));
 		}
-		logger.debug("byteInCount = " + byteInCount);
+		logger.debug("byteInCount = " + packagedBytes.size());
 		
 			if(packagedBytes.size() <= 255){
 				packagedBytes.add(0, packagedBytes.size());

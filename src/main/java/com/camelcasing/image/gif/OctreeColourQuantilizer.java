@@ -1,6 +1,3 @@
-/**TODO
- * randomise the colourPointers before quantilization
- */
 
 package com.camelcasing.image.gif;
 

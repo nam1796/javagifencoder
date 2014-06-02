@@ -29,7 +29,7 @@ public class TestCreation{
 	
 	public static Logger logger = Logger.getLogger(TestCreation.class);
 	
-	@Test
+	
 	public void writeAndReadFromFile2(){
 		try{
 			InputImage image = new InputBufferedImage(ImageIO.read(new File("/media/camelcasing/ExtraDrive/simple.png")));

@@ -76,12 +76,7 @@ public class GIFUtils{
 	 * 		(Same value as entered into {@link com.camelcasing.image.gif.ScreenDescriptorField ScreenDescriptorField}) 
 	 * @return Number of bit required to represent the maximum size of the input parameter 
 	 */
-	public static int numberOfBitsRequired(int colourTableSize){
-		int max = (int)((Math.pow(2, colourTableSize + 1)) - 1);
-		return((Integer.toBinaryString(max)).length());
-	}
-	
-	public static int getBitsRequiredFromDecimal(int number){
-		return((int)((Math.log(number)) / Math.log(2)) - 1);
+	public static int numberOfBitsRequired(int n){
+		return((Integer.toBinaryString(n)).length());
 	}
 }

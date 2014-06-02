@@ -19,20 +19,20 @@ public class CreateGIF{
 		
 		private Logger logger = Logger.getLogger(getClass());
 	
-	public CreateGIF(File outputFile, int width, int height, InputImage... images){
+	public CreateGIF(String outputFile, int width, int height, InputImage... images){
 		this.images = images;
-		this.outputFile = outputFile;
+		this.outputFile = new File(outputFile);
 		this.width = width;
 		this.height = height;
 		imageDataBytes = new ArrayList<ArrayList<Integer>>();
 		gifOptions = new GIFOptions[images.length];
 	}
 	
-	public CreateGIF(File outputFile, InputImage... images){
+	public CreateGIF(String outputFile, InputImage... images){
 		this(outputFile, images[0].getWidth(), images[0].getHeight(), images);
 	}
 	
-	public boolean createGIF(){
+	public boolean create(){
 		logicalScreenDescriptor = createLogicalScreenDescriptor();
 		getImageBytes();
 		writeBytes();
@@ -60,8 +60,9 @@ public class CreateGIF{
 		try(OutputStream os = new FileOutputStream(outputFile)){
 			for(int i : Headers.getHeader89a()) os.write(i);
 			for(int i : logicalScreenDescriptor.getLogicalScreenDescriptor()) os.write(i);
-			for(int i : new NetscapeApplicationExtension(0).create()) os.write(i);
-			
+				if(images.length > 1){
+					for(int i : new NetscapeApplicationExtension(0).create()) os.write(i);
+				}
 			for(int i = 0; i < imageDataBytes.size(); i++){
 				for(int j : imageDataBytes.get(i)) os.write(j);
 			}
@@ -83,6 +84,16 @@ public class CreateGIF{
 	}
 	public CreateGIF setTimeDelays(int timeDelay) {
 		this.timeDelay = timeDelay;
+		return this;
+	}
+	
+	public CreateGIF setWidth(int width){
+		this.width = width;
+		return this;
+	}
+	
+	public CreateGIF setHeight(int height){
+		this.height = height;
 		return this;
 	}
 }
