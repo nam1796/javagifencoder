@@ -1,10 +1,16 @@
 
-package com.camelcasing.image.gif;
+package com.camelcasing.image.octreecolourquantilizer;
 
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
+import com.camelcasing.image.gif.InputImage;
+
+/**
+ * @author Philip Teclaff
+ * @since 1.0
+ */
 public class OctreeColourQuantilizer{
 	
 		private Logger logger = Logger.getLogger(OctreeColourQuantilizer.class);
@@ -36,12 +42,11 @@ public class OctreeColourQuantilizer{
 	public OctreeColourQuantilizer quantilize(){
 		extractRGBValues();
 		createOctree();
-		logger.debug("before purning colour count = " + colourPointers.size());
+		//logger.debug("before pruning colour count = " + colourPointers.size());
 			if(!checkIfEnoughColours()){
-				logger.debug("Pruning needed");
 				pruneTree();
 			}
-		logger.debug("After pruning colour count = " + colourPointers.size());
+		//logger.debug("After pruning colour count = " + colourPointers.size());
 		quantilizedInput = generateIndexedImage();
 		colourPalette = createColourPalette();
 		return(this);
@@ -52,9 +57,7 @@ public class OctreeColourQuantilizer{
 	 */
 	private void extractRGBValues(){
 		int w = image.getWidth();
-		logger.debug("image in LZW width = " + w);
 		int h = image.getHeight();
-		logger.debug("image in LZW height = " + h);
 		int current;
 		int indexCount = 0;
 		rawInput = new int[w * h][3];
@@ -132,7 +135,6 @@ public class OctreeColourQuantilizer{
 	
 	private int[] generateIndexedImage(){
 		int[] indexedColours = new int[colourBitArray.size()];
-		logger.debug("colourBitArray.size() = " + colourBitArray.size());
 		int count = 0;
 			for(int[] c : colourBitArray){
 				int targetCount = 1;
@@ -151,6 +153,7 @@ public class OctreeColourQuantilizer{
 	}
 	
 	public int[] getQuantilizedInput(){
+		//logger.info("quantilized input = " + quantilizedInput.length);
 		return quantilizedInput;
 	}
 	
@@ -160,11 +163,15 @@ public class OctreeColourQuantilizer{
 				colourP[i][0] = colourPointers.get(i).getRed();
 				colourP[i][1] = colourPointers.get(i).getGreen();
 				colourP[i][2] = colourPointers.get(i).getBlue();
+				if(colourP[i][0] == -1 || colourP[i][1] == -1 || colourP[i][2] == -1){
+					logger.error("octree return -1");
+				}
 			}
 		return colourP;
 	}
 	
 	public int[][] getColourPalette(){
+		//logger.info("colourPalette = " + colourPalette.length);
 		return colourPalette;
 	}
 	

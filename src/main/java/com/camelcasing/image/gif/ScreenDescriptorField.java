@@ -1,8 +1,8 @@
 package com.camelcasing.image.gif;
 
 /**
- * @author camelCasing
- *
+ * @author Philip Teclaff
+ * @since 1.0
  */
 public final class ScreenDescriptorField {
 		

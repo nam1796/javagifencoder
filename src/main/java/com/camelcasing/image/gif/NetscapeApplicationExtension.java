@@ -7,6 +7,8 @@ public class NetscapeApplicationExtension{
 
 	/**
 	 * @param iterations Must be between 0 and 65535 (0 for infinite)
+	 * @author Philip Teclaff
+	 * @since 1.0
 	 */
 	public NetscapeApplicationExtension(int iterations){
 		this.iterations = iterations;

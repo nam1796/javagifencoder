@@ -1,3 +1,10 @@
 target/
-bin/
-.metadata
+.settings/
+.project
+.classpath
+target/javadoc-bundle-options
+target/maven-archiver
+target/surefire
+target/surefire-reports
+taget/test=classes
+src/test

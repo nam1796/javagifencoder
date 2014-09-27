@@ -3,9 +3,8 @@ package com.camelcasing.image.gif;
 /**
  * Utility class that contains static getters for the various headers within a GIF file. This Class can not be instantized
  * 
- * @author camelCasing
- * @since 0.2
- * @version 0.2
+ * @author Philip Teclaff
+ * @since 1.0
  */
 public class Headers{
 

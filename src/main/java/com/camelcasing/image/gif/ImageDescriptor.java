@@ -13,8 +13,8 @@ package com.camelcasing.image.gif;
  * byte 10 = {@link com.camelcasing.image.gif.ImageDescriptorFields ImageDescriptorFields}
  * 
  * 
- * @author camelCasing
- *
+ * @author Philip Teclaff
+ * @since 1.0
  */
 public class ImageDescriptor{
 	

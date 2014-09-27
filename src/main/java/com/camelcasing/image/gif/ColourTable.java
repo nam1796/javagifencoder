@@ -9,15 +9,15 @@ public class ColourTable{
 	/**
 	 * Amount of RGB colour values in ColourTable
 	 */
-	private final int tableSize;
+	protected final int tableSize;
 	/**
 	 * List containing RGB values,
 	 */
-	private int[] colourTable; 
+	protected int[] colourTable; 
 	/**
 	 * keeps track of where to add next value in table array.
 	 */
-	private int currentLocation = 0;
+	protected int currentLocation = 0;
 	 /**
 	  * If the {@link com.camelcasing.image.gif.ColourTable#getColourTable() getColourTable} method is called before 
 	  * the table has a definition for all the allocated colours then remaining spaces will be filled with the colour BLACK  
@@ -25,14 +25,13 @@ public class ColourTable{
 	  */
 	public ColourTable(int tableSize){
 		this.tableSize = tableSize;
-		
 		calculateTableSize();
 	}
 	
 	/**
 	 * Calculate the colourTable size based on the tableSize, making room for RGB values
 	 */
-	private void calculateTableSize(){
+	protected void calculateTableSize(){
 		colourTable = new int[((int)Math.pow(2, tableSize + 1)) * 3];
 	}
 	

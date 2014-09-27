@@ -1,5 +1,9 @@
 package com.camelcasing.image.gif;
 
+/**
+ * @author Philip Teclaff
+ * @since 1.0
+ */
 public class ImageDescriptorFields{
 
 		/**

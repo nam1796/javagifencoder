@@ -5,19 +5,20 @@ package com.camelcasing.image.gif;
  * Total of 8 Bytes
  * This class will throw an {@link java.lang.IllegalArgumentException IllegalArgumentException} if the input values are outside the defined ranges.
  * 
- * @author camelCasing
- * @version 0.2
- * @since 0.2
+ * @author Philip Teclaff
+ * @since 1.0
  */
 public class GraphicControlExtension{
 
 		/**
+		 * <pre>
 		 * value of 0 mean no disposal specified
 		 * value of 1 means Do not dispose, graphics to be left in place
 		 * value of 2 means restore to background colour
 		 * value of 3 means restore to the previous image
 		 * 
 		 * should be 1 for an animated GIF
+		 * </pre>
 		 */
 		private int disposalMethod;
 		/**

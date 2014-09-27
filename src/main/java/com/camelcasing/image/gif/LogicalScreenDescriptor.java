@@ -7,6 +7,9 @@ package com.camelcasing.image.gif;
  * byte 5 = {@link com.camelcasing.image.gif.ScreenDescriptorField}
  * byte 6 = Background colour index
  * byte 7 = pixel aspect ratio 
+ * 
+ * @author Philip Teclaff
+ * @since 1.0
  */
 public class LogicalScreenDescriptor{
 

@@ -4,6 +4,14 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
+import com.camelcasing.image.lwzcompression.LZWCompressor;
+import com.camelcasing.image.lwzcompression.LZWCompressorMark2;
+import com.camelcasing.image.octreecolourquantilizer.OctreeColourQuantilizer;
+
+/**
+ * @author Philip Teclaff
+ * @since 1.0
+ */
 public class ImageData {
 		
 		private Logger logger = Logger.getLogger(getClass());
@@ -33,20 +41,20 @@ public class ImageData {
 	 * @param height height of the image maybe overridden by <code>GIFOptions</code>
 	 * @param gifOptions optional specific requirments for the image processing, use null to use defaults {@link com.camelcasing.image.gif.GIFOptions}
 	 */
-	public ImageData(InputImage image, int timeDelay, int maxColours, int width, int height, GIFOptions gifOptions){
+	public ImageData(InputImage image, int timeDelay, int maxColours, int width, int height){
 		this.width = width;
 		this.height = height;
 		this.image = image;
 		this.maxColours = maxColours;
 		this.timeDelay = timeDelay;
-		this.gifOptions = gifOptions;
+		this.gifOptions = image.getGIFOptions();
 		imageData = new ArrayList<Integer>();
 	}
 	
 	public ImageData init(){
-			if(gifOptions != null) getGIFOptions();
+			//if(gifOptions != null) getGIFOptions();
 		checkImageSize();
-			if(memeText != null) addMemeToImage();
+			//if(memeText != null) addMemeToImage();
 		quantilizeImage();
 		addGraphicsControlExtensionBytes();
 		addImageDescriptorBytes();
@@ -87,56 +95,55 @@ public class ImageData {
 		quantilizer = new OctreeColourQuantilizer(image, maxColours).quantilize();
 		colourCount = quantilizer.getColourCount();
 		colourTableSize = getColourTableSize();
-		logger.debug("colorTableSize = " + colourTableSize);
 	}
 	
-	public void addGraphicsControlExtensionBytes(){
+	private void addGraphicsControlExtensionBytes(){
 		int[] graphicsControlExtensionBytes = new GraphicControlExtension(graphicsControlDisposalMethod, false, false, timeDelay, 0).getGraphicControlExtension();
 		for(int i : graphicsControlExtensionBytes) imageData.add(i);
 	}
 	
-	public void addImageDescriptorBytes(){
-		ImageDescriptorFields imageDescriptorFields = new ImageDescriptorFields(true, false, false, colourTableSize); //hard-coded
+	private void addImageDescriptorBytes(){
+		ImageDescriptorFields imageDescriptorFields = new ImageDescriptorFields(true, false, false, colourTableSize);
 		ImageDescriptor imageDescriptor = new ImageDescriptor(offsetLeft, offsetTop, width, height, imageDescriptorFields);
 		int[] imageDescriptorBytes = imageDescriptor.getImageDescriptor();
 			for(int i : imageDescriptorBytes) imageData.add(i);
 	}
 		
-	public void addColourTableBytes(){
+	private void addColourTableBytes(){
 		int[][] colourPalette = quantilizer.getColourPalette();
-		ColourTable colourTable = new ColourTable(colourTableSize); //hard-coded
+		ColourTable colourTable = new ColourTable(colourTableSize);
 			for(int i = 0; i < colourPalette.length; i++){
 				colourTable.addColour(colourPalette[i][0], colourPalette[i][1], colourPalette[i][2]);
 			}
 		int extraColour = (int)Math.pow(2, colourTableSize + 1);
-			for(int i = colourPalette.length; i < extraColour; i++){
-				colourTable.addColour(0,  0,  0);
-				logger.debug("added extra colour");
+			if(extraColour > colourPalette.length){
+				for(int i = colourPalette.length; i < extraColour; i++){
+					colourTable.addColour(0,  0,  0);
+				}
 			}
 		int[] colours = colourTable.getColourTable();
 			for(int i : colours) imageData.add(i);
-			
-		bitSize = GIFUtils.numberOfBitsRequired(((int)Math.pow(2, colourTableSize + 1)) - 1);
+		bitSize = GIFUtils.numberOfBitsRequired(colourTableSize);
 	}
 	
-	public void compressImage(){
+	private void compressImage(){
 		int[] rawInput = quantilizer.getQuantilizedInput();
-		compressor = new LZWCompressor(rawInput, bitSize); //hard-coded
+		compressor = new LZWCompressorMark2(rawInput, bitSize);
 		compressor.compress();
 	}
 	
-	public void addCompressedImageBytes(){
+	private void addCompressedImageBytes(){
 		ArrayList<Integer> packagedBytes = compressor.getPackagedBytes();
-		imageData.add(bitSize); //hard-coded
-			for(int i : packagedBytes) imageData.add(i);
+		imageData.add(bitSize);
+		for(int i : packagedBytes) imageData.add(i);
 		imageData.add(0);
 	}
 	
-	public void addMemeToImage(){
+	private void addMemeToImage(){
 		image.addText(memeText, 666);
 	}
 	
-	public void checkImageSize(){
+	private void checkImageSize(){
 		if(image.getWidth() != width || image.getHeight() != height) image.resize(width, height);
 	}
 	

@@ -5,6 +5,10 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
+/**
+ * @author Philip Teclaff
+ * @since 1.0
+ */
 public class CreateGIF{
 
 		private int width;
@@ -15,7 +19,6 @@ public class CreateGIF{
 		private File outputFile;
 		private LogicalScreenDescriptor logicalScreenDescriptor;
 		private ArrayList<ArrayList<Integer>> imageDataBytes;
-		private GIFOptions[] gifOptions;
 		
 		private Logger logger = Logger.getLogger(getClass());
 	
@@ -25,7 +28,6 @@ public class CreateGIF{
 		this.width = width;
 		this.height = height;
 		imageDataBytes = new ArrayList<ArrayList<Integer>>();
-		gifOptions = new GIFOptions[images.length];
 	}
 	
 	public CreateGIF(String outputFile, InputImage... images){
@@ -47,13 +49,11 @@ public class CreateGIF{
 	
 	private void getImageBytes(){
 		for(int i = 0; i < images.length; i++){
-			imageDataBytes.add(new ImageData(images[i], timeDelay, maxColours, width, height, gifOptions[i])
+			logger.info("processing image " + (i + 1) + " of " + images.length);
+			imageDataBytes.add(new ImageData(images[i], timeDelay, maxColours, width, height)
 			.init()
 			.getImageData());
 		}
-		
-		logger.debug("image.length = " + images.length);
-		logger.debug("imageDataBytes.size() = " + imageDataBytes.size());
 	}
 	
 	private void writeBytes(){
@@ -69,13 +69,8 @@ public class CreateGIF{
 			
 			os.write(Headers.getTrailer());
 		}catch(IOException e){
-			logger.fatal("Failed to write bytes to file\n" + e.getMessage());
+			logger.error("Failed to write bytes to file: " + outputFile.getPath() + "\n" + e.getMessage());
 		}
-	}
-	
-	public CreateGIF addGIFOptions(GIFOptions go, int index){
-		gifOptions[index] = go;
-		return this;
 	}
 	
 	public CreateGIF setMaxColours(int maxColours) {

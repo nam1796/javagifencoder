@@ -13,12 +13,15 @@ import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
 
+/**
+ * @author Philip Teclaff
+ * @since 1.0
+ */
 public class InputBufferedImage implements InputImage{
 
 		private BufferedImage image;
+		private GIFOptions gifOptions = null;
 		private Logger logger = Logger.getLogger(getClass());
-		
-		private static int fontSize = 1;
 	
 	public InputBufferedImage(BufferedImage image){
 		this.image = image;
@@ -61,6 +64,7 @@ public class InputBufferedImage implements InputImage{
 
 	@Override
 	public void addText(String text, int location) {
+		int fontSize = 1;
 		Graphics2D g2d = image.createGraphics();
 		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		g2d.setFont(new Font("SansSerif", Font.BOLD, fontSize));
@@ -79,5 +83,16 @@ public class InputBufferedImage implements InputImage{
 		fm = g2d.getFontMetrics();
 		g2d.drawString(text, (getWidth() - fm.stringWidth(text)) / 2, getHeight() - 6);// - fm.getHeight());
 		g2d.dispose();
+	}
+
+	@Override
+	public InputImage addGIFOptions(GIFOptions gifOptions){
+		this.gifOptions = gifOptions;
+		return this;
+	}
+
+	@Override
+	public GIFOptions getGIFOptions(){
+		return gifOptions;
 	}
 }

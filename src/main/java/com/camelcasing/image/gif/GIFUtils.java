@@ -2,10 +2,9 @@ package com.camelcasing.image.gif;
 
 /**
  * Collection of static method to aid the creation of GIF files. This class can not be instantized.
- * @version 0.2
- * @since 0.2
- * @author camelCasing
- *
+ * 
+ * @author Philip Teclaff
+ * @since 1.0
  */
 public class GIFUtils{
 	
@@ -72,11 +71,12 @@ public class GIFUtils{
 	}
 	
 	/**
-	 * @param colourTableSize Square root of the Size of the <code>Global Colour Table</code>, minus one 
+	 * @param colourTableSize Square root of the Size of the <code>Global/Local Colour Table</code>
 	 * 		(Same value as entered into {@link com.camelcasing.image.gif.ScreenDescriptorField ScreenDescriptorField}) 
-	 * @return Number of bit required to represent the maximum size of the input parameter 
+	 * @return Number of bit required to represent the maximum value in the colour table
 	 */
-	public static int numberOfBitsRequired(int n){
+	public static int numberOfBitsRequired(int colourTableSize){
+		int n = ((int)Math.pow(2, colourTableSize + 1)) - 1;
 		return((Integer.toBinaryString(n)).length());
 	}
 }

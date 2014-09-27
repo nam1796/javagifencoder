@@ -1,9 +1,17 @@
-package com.camelcasing.image.gif;
+package com.camelcasing.image.lwzcompression;
 
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
+import com.camelcasing.image.gif.GIFUtils;
+import com.camelcasing.image.gif.ImageCompressor;
+import com.camelcasing.image.gif.InputColour;
+
+/**
+ * @author Philip Teclaff
+ * @since 1.0
+ */
 public class LZWCompressor implements ImageCompressor{
 	
 	private Logger logger = Logger.getLogger(getClass());
@@ -30,13 +38,11 @@ public class LZWCompressor implements ImageCompressor{
 		STARTBITSIZE = bitSize;
 		this.rawData = rawData;
 		this.bitSize = bitSize + 1;
-		logger.debug("start actual bitSize = " + this.bitSize);
+		//logger.debug("start bit size = " + this.bitSize);
 		bitStream = new StringBuilder(8);
 		dictionary = new ArrayList<InputColour>();
 		currentDictionaryCount = setInitialDictionaryCountValue(this.bitSize);
-		logger.debug("currentDictionaryCount = " + currentDictionaryCount);
 		maxBit = setMaxBitSize(this.bitSize);
-		logger.debug("start maxBit = " + this.maxBit);
 	}
 
 	private int setInitialDictionaryCountValue(int bs) {
@@ -53,9 +59,10 @@ public class LZWCompressor implements ImageCompressor{
 			maxBit = setMaxBitSize(bitSize);
 		}
 		dictionary.add(dicCount, colour);
+		dictionary.add(colour);
 		dicCount++;
 		currentDictionaryCount++;
-		if (currentDictionaryCount > 4095){
+		if (currentDictionaryCount == 4095){
 			clearDictionary();
 		}
 	}
@@ -120,20 +127,14 @@ public class LZWCompressor implements ImageCompressor{
 	public ArrayList<Integer> getPackagedBytes() {
 		packagedBytes = new ArrayList<Integer>();
 		bitStream.append(GIFUtils.getBitsFromInt(getClearCode(), STARTBITSIZE + 1)); //KEEP
-		logger.debug("finalBitSize = " + getFinalBitSize());
-		logger.debug("terminationCode = " + this.getTerminationCode());
-		bitStream.insert(0, GIFUtils.getBitsFromInt(getTerminationCode(), getFinalBitSize())); //KEEP
 		String s = bitStream.toString();
 		
 		int numberOfBytes = s.length() / 8;
 			if(!(s.length() % 8 == 0)) numberOfBytes++;
-		logger.debug("numberOfBytes = " + numberOfBytes);
 		
 		int numberOfFullBlocks = numberOfBytes / 255;
-		logger.debug("numberOfFullBlocks = " + numberOfFullBlocks);
 		
 		int finalBlockSize = numberOfBytes % 255;
-		logger.debug("finalBlockSize = " + finalBlockSize);
 		
 		int i = 0;
 		try{
@@ -147,7 +148,6 @@ public class LZWCompressor implements ImageCompressor{
 				}
 			packagedBytes.add(Integer.valueOf(sb.toString(), 2));
 		}
-		logger.debug("byteInCount = " + packagedBytes.size());
 		
 			if(packagedBytes.size() <= 255){
 				packagedBytes.add(0, packagedBytes.size());
@@ -158,8 +158,8 @@ public class LZWCompressor implements ImageCompressor{
 					}
 				packagedBytes.add((packagedBytes.size() - finalBlockSize), finalBlockSize);
 			}
-		
-			logger.debug("bytesReturned = " + packagedBytes.size());
+		packagedBytes.add(getTerminationCode());
+		//for(int r : packagedBytes) logger.debug(r);
 		return packagedBytes;
 	}
 
@@ -170,7 +170,6 @@ public class LZWCompressor implements ImageCompressor{
 		dicCount = 0;
 		dictionary = new ArrayList<InputColour>();
 		maxBit = setMaxBitSize(bitSize);
-		logger.debug("Dictionary Cleared");
 		
 	}
 

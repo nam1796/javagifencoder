@@ -1,5 +1,9 @@
-package com.camelcasing.image.gif;
+package com.camelcasing.image.octreecolourquantilizer;
 
+/**
+ * @author Philip Teclaff
+ * @since 1.0
+ */
 public class OctreeNode{
 	
 		private int count = 0;
@@ -45,7 +49,7 @@ public class OctreeNode{
 	}
 
 	/**
-	 * 
+	 * THIS COULD BE THE PROBLEM --- WRITE A TEST
 	 * @param index of the child (0-7)
 	 * @return Then Octree node for the given index or null if child does not exist
 	 */
