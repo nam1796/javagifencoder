@@ -7,4 +7,4 @@ target/maven-archiver
 target/surefire
 target/surefire-reports
 taget/test=classes
-src/test
+src/test/java/com/camelcasing/image/gif/test/GIFUtils.java
