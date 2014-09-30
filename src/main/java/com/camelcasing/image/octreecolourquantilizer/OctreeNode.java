@@ -53,7 +53,6 @@ public class OctreeNode{
 	}
 
 	/**
-	 * THIS COULD BE THE PROBLEM --- WRITE A TEST - edit -> don't think so
 	 * 	does return null often, but that is the point.
 	 * 
 	 * @param index of the child (0-7)
@@ -101,8 +100,8 @@ public class OctreeNode{
 	
 	@Override
 	public String toString(){
-		return("OctreeNode, index = " + index + " count = " + count +
-				" red = " + getRed() + " green = " + getGreen() + " blue = " + getBlue());
+		return("OctreeNode, index = " + index + ", count = " + count +
+				", red = " + getRed() + ", green = " + getGreen() + ", blue = " + getBlue());
 	}
 
 

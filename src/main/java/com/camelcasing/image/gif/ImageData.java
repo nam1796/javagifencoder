@@ -39,8 +39,9 @@ public class ImageData {
 	 * @param maxColours maximum amount of colours used in this image, maybe overridden by <code>GIFOptions</code>
 	 * @param width width of the image maybe overridden by <code>GIFOptions</code>
 	 * @param height height of the image maybe overridden by <code>GIFOptions</code>
-	 * @param gifOptions optional specific requirments for the image processing, use null to use defaults {@link com.camelcasing.image.gif.GIFOptions}
 	 */
+	 //* @param gifOptions optional specific requirments for the image processing, use null to use defaults {@link com.camelcasing.image.gif.GIFOptions}
+	 //*/
 	public ImageData(InputImage image, int timeDelay, int maxColours, int width, int height){
 		this.width = width;
 		this.height = height;
