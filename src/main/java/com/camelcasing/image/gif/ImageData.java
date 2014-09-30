@@ -28,7 +28,7 @@ public class ImageData {
 		private int bitSize;
 		private ImageCompressor compressor;
 		private GIFOptions gifOptions;
-		private int graphicsControlDisposalMethod = 1;
+		private int graphicsControlDisposalMethod = 0;
 		private int offsetLeft = 0;
 		private int offsetTop = 0;
 		private String memeText = null;
@@ -128,7 +128,8 @@ public class ImageData {
 	
 	private void compressImage(){
 		int[] rawInput = quantilizer.getQuantilizedInput();
-		compressor = new LZWCompressorMark2(rawInput, bitSize);
+//		compressor = new LZWCompressorMark2(rawInput, bitSize);
+		compressor = new LZWCompressor(rawInput, bitSize);
 		compressor.compress();
 	}
 	

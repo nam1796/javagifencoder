@@ -83,7 +83,7 @@ public class OctreeColourQuantilizer{
 	}
 	
 	public int[] getCombinedColourNumbers(int r, int g, int b){
-		int[] colourBitCombinations = new int[8];
+		int[] colourBitCombinations = new int[DEPTH];
 		int count = 7;
 			for(int i = 0; i < DEPTH; i++){
 				int c = Integer.valueOf((String.valueOf((r >> count) & 0x1) + ((g >> count) & 0x1) + ((b >> count) & 0x1)), 2);

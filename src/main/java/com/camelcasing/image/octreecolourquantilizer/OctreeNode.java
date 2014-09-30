@@ -1,11 +1,15 @@
 package com.camelcasing.image.octreecolourquantilizer;
 
+import org.apache.log4j.Logger;
+
+
 /**
  * @author Philip Teclaff
  * @since 1.0
  */
 public class OctreeNode{
 	
+	    private Logger logger = Logger.getLogger(getClass());
 		private int count = 0;
 		private OctreeNode[] children = new OctreeNode[8];
 		private OctreeNode parent;
@@ -41,7 +45,7 @@ public class OctreeNode{
 	 * @param index Index of this node in Parents Children
 	 * @return this
 	 */
-	public OctreeNode getChild(int index) throws NullPointerException{
+	public OctreeNode getChild(int index){
 			if(children[index] == null){
 				children[index] = new OctreeNode(this, index);
 			}
@@ -49,7 +53,9 @@ public class OctreeNode{
 	}
 
 	/**
-	 * THIS COULD BE THE PROBLEM --- WRITE A TEST
+	 * THIS COULD BE THE PROBLEM --- WRITE A TEST - edit -> don't think so
+	 * 	does return null often, but that is the point.
+	 * 
 	 * @param index of the child (0-7)
 	 * @return Then Octree node for the given index or null if child does not exist
 	 */
