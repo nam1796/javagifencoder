@@ -8,3 +8,4 @@ target/surefire
 target/surefire-reports
 taget/test=classes
 src/test/java/com/camelcasing/image/gif/test/AniGifTest.java
+src/test/java/com/camelcasing/image/gif/test/TestCreation.java
