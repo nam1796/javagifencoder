@@ -40,6 +40,10 @@ public class CreateGIF{
 		writeBytes();
 		return true;
 	}
+
+	private void createStream(){
+		//add option to pass OutputStream instead of File
+	}
 	
 	private LogicalScreenDescriptor createLogicalScreenDescriptor(){
 		ScreenDescriptorField sdf = new ScreenDescriptorField(false, 1, false, 0);

@@ -84,20 +84,22 @@ public class LZWCompressorMark2 implements ImageCompressor{
 		CLEAR_CODE = (int)Math.pow(2, bitSize);
 		TERMINATION_CODE = CLEAR_CODE + 1;
 		startDictionaryEntry = TERMINATION_CODE + 1;
+		//logger.debug("startDictionaryEntry = " + startDictionaryEntry);
 		
 		dictionary = new LZWDictionary(startDictionaryEntry);
 		
 		this.rawData = rawData;
 		this.bitSize = bitSize + 1; //adding 1 to account for the termination code
-		logger.debug("startBitSize = " + this.bitSize);
+		//logger.debug("startBitSize = " + this.bitSize);
 		currentMaximumBitSize = (int)Math.pow(2, this.bitSize);
 		dictionaryCount = ((int) Math.pow(2, this.bitSize - 1)) + 2;
-		resetBitSize = this.bitSize;
-		outputStream.append(GIFUtils.getBitsFromInt(CLEAR_CODE, bitSize));
+		resetBitSize = bitSize + 1;
+		//outputStream.append(GIFUtils.getBitsFromInt(CLEAR_CODE, bitSize)); WAS ON TWICE SEE END PACKAGED BYTES
 	}
 
 	/* 
 	 * @see com.camelcasing.image.gif.ImageCompressor#compress()
+	 * THIS COMPRESSOR IS SKIPPING VALUES, IS ROUGHLY RIGHT BUT BITS MISSING??????????????????
 	 */
 	@Override
 	public void compress(){
@@ -105,8 +107,8 @@ public class LZWCompressorMark2 implements ImageCompressor{
 		String currentValue = "";
 		String nextValue = "";
 		String combinedCurrentNext = "";
-
-			for(int i = 0; i <= rawData.length - 2; i++){
+		
+			for(int i = 0; i < rawData.length - 1; i++){
 				if(!takeFromDictionary){
 					currentValue += Integer.toString(rawData[i]);
 					nextValue = Integer.toString(rawData[i + 1]);
@@ -115,22 +117,22 @@ public class LZWCompressorMark2 implements ImageCompressor{
 					nextValue = Integer.toString(rawData[i]);
 					combinedCurrentNext = currentValue + nextValue;
 				}
-				
+					//logger.debug("currentValue = " + currentValue);
 					if(!dictionary.contains(combinedCurrentNext)){
-						addToDictionary(combinedCurrentNext);
-						//addToStream(takeFromDictionary ? dictionary.get(currentValue) : Integer.parseInt(currentValue));
 							if(takeFromDictionary){
 								addToStream(dictionary.get(currentValue));
+								//logger.debug("Taken from dictionary");
 								i--;
 							}else{
 								addToStream(Integer.parseInt(currentValue));
 							}
+						addToDictionary(combinedCurrentNext);
 						currentValue = "";
 						takeFromDictionary = false;
 					}else{
 						currentValue = combinedCurrentNext;
+						if(!takeFromDictionary) i++;
 						takeFromDictionary = true;
-						i++;
 					}
 					
 			}//exit loop and process the last bit
@@ -138,19 +140,21 @@ public class LZWCompressorMark2 implements ImageCompressor{
 			if(dictionary.contains(combinedCurrentNext)){
 				addToStream(dictionary.get(combinedCurrentNext));
 			}else{
-				addToStream(takeFromDictionary ? dictionary.get(currentValue) : Integer.parseInt(currentValue));
+				//addToStream(takeFromDictionary ? dictionary.get(currentValue) : Integer.parseInt(currentValue));
 				addToStream(rawData[rawData.length - 1]);
 			}
 	}
 	
 	public void addToStream(int i){
+		//logger.debug(Long.parseLong(GIFUtils.getBitsFromInt(i, bitSize), 2));
+		//logger.debug(GIFUtils.getBitsFromInt(i, bitSize));
 		outputStream.insert(0, GIFUtils.getBitsFromInt(i, bitSize));
 	}
 
 	public void addToDictionary(String colour){
 		if(dictionaryCount == currentMaximumBitSize){
 			bitSize++;
-			//logger.debug("bitsize id now " + bitSize);
+			//logger.debug("bitsize is now " + bitSize);
 			currentMaximumBitSize = (int)Math.pow(2, bitSize);
 		}
 		dictionary.add(colour);

@@ -12,7 +12,6 @@ import org.apache.log4j.Logger;
 public class LZWDictionary {
 
 		private Logger logger = Logger.getLogger(getClass().getName());
-		private int maxSize;
 		private ArrayList<String> dictionary = new ArrayList<String>();
 		private int offset;
 		
@@ -21,11 +20,8 @@ public class LZWDictionary {
 	}
 	
 	public void clear(){
+		//logger.debug("dictionary cleared");
 		dictionary.clear();
-	}
-	
-	public void setMaxSize(int newSize){
-		maxSize = newSize;
 	}
 	
 	public void add(String s){

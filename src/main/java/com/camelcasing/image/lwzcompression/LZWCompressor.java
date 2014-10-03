@@ -26,7 +26,6 @@ public class LZWCompressor implements ImageCompressor{
 	private ArrayList<InputColour> dictionary;
 	private int maxBit;
 	private int current;
-	private int dicCount = 0;
 	private int next;
 	private InputColour pattern = null;
 	private int inputLocation = 0;
@@ -35,6 +34,7 @@ public class LZWCompressor implements ImageCompressor{
 
 	public LZWCompressor(int[] rawData, int bitSize) {
 		DICINCREMENT = ((int) Math.pow(2, bitSize)) + 2;
+		//logger.debug("DICINCREMENT = " + DICINCREMENT);
 		STARTBITSIZE = bitSize;
 		this.rawData = rawData;
 		this.bitSize = bitSize + 1;
@@ -56,15 +56,23 @@ public class LZWCompressor implements ImageCompressor{
 	private void addToDictionary(InputColour colour) {
 		if (currentDictionaryCount == maxBit) {
 			bitSize++;
+			//logger.debug("bit size is now " + bitSize);
 			maxBit = setMaxBitSize(bitSize);
 		}
-		dictionary.add(dicCount, colour);
 		dictionary.add(colour);
-		dicCount++;
 		currentDictionaryCount++;
 		if (currentDictionaryCount == 4095){
+			//logger.debug("dictionary cleared");
 			clearDictionary();
 		}
+	}
+	
+	private void clearDictionary() {
+		bitStream.insert(0, GIFUtils.getBitsFromInt(getClearCode(), bitSize));
+		bitSize = STARTBITSIZE + 1;
+		currentDictionaryCount = setInitialDictionaryCountValue(bitSize);
+		dictionary = new ArrayList<InputColour>();
+		maxBit = setMaxBitSize(bitSize);	
 	}
 
 	/**
@@ -121,6 +129,8 @@ public class LZWCompressor implements ImageCompressor{
 		} else {
 			i = current;
 		}
+		//logger.debug(Integer.valueOf(GIFUtils.getBitsFromInt(i, bitSize), 2));
+		//if(found != null) logger.debug("Taken from dictionary");
 		bitStream.insert(0, GIFUtils.getBitsFromInt(i, bitSize));
 	}
 
@@ -161,16 +171,6 @@ public class LZWCompressor implements ImageCompressor{
 		packagedBytes.add(getTerminationCode());
 		//for(int r : packagedBytes) logger.debug(r);
 		return packagedBytes;
-	}
-
-	private void clearDictionary() {
-		bitStream.insert(0, GIFUtils.getBitsFromInt(getClearCode(), bitSize));
-		bitSize = STARTBITSIZE + 1;
-		currentDictionaryCount = setInitialDictionaryCountValue(bitSize);
-		dicCount = 0;
-		dictionary = new ArrayList<InputColour>();
-		maxBit = setMaxBitSize(bitSize);
-		
 	}
 
 	private int getTerminationCode() {

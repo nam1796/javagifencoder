@@ -13,31 +13,16 @@ public class UtilTest {
 	@Test
 	public void createByteFromStringTest(){
 		assertEquals("111", GIFUtils.getBitsFromInt(103, 3));
-	}
-	
-	@Test
-	public void createByteFromStringTest2(){
+		assertEquals("000", GIFUtils.getBitsFromInt(0, 3));
 		assertEquals("1100111", GIFUtils.getBitsFromInt(103, 7));
-	}
-	
-	@Test
-	public void createByteFromStringTest3(){
 		assertEquals("011", GIFUtils.getBitsFromInt(3, 3));
-	}
-	
-	@Test
-	public void createByteFromStringTest4(){
 		assertEquals("111", GIFUtils.getBitsFromInt(7, 3));
-	}
-	
-	@Test
-	public void createByteFromStringTest5(){
 		assertEquals("101", GIFUtils.getBitsFromInt(5, 3));
 	}
 	
 	@Test
-	public void createByteFromStringTest6(){
-		assertEquals("000", GIFUtils.getBitsFromInt(0, 3));
+	public void createByteFromStringLarge(){
+		assertEquals("000000000011", GIFUtils.getBitsFromInt(3, 12));
 	}
 	
 	@Test 
