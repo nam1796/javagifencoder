@@ -7,138 +7,188 @@ import org.apache.log4j.Logger;
 import com.camelcasing.image.gif.GIFUtils;
 
 /**
+ * Implements the LZW compression algorithm, takes as input an array of indexes into the global/local colour table
+ * and returns an array of compressed and packaged bytes (including the block-size bytes)
+ * 
  * @author Philip Teclaff
  * @since 1.0
  */
 public class LZWCompressor{
 	
-	private Logger logger = Logger.getLogger(getClass());
-
-	private final int DICINCREMENT;
-	private final int STARTBITSIZE;
-
-	private int[] rawData;
-	private int bitSize;
-	private StringBuilder bitStream;
-	private int currentDictionaryCount;
-	private ArrayList<InputColour> dictionary;
-	private int maxBit;
-	private int current;
-	private int next;
-	private InputColour pattern = null;
-	private int inputLocation = 0;
-	private InputColour found = null;
-	private ArrayList<Integer> packagedBytes;
-
-	public LZWCompressor(int[] rawData, int bitSize) {
-		DICINCREMENT = ((int) Math.pow(2, bitSize)) + 2;
-		//logger.debug("DICINCREMENT = " + DICINCREMENT);
-		STARTBITSIZE = bitSize;
+		private Logger logger = Logger.getLogger(getClass().getName());
+	
+		/**
+		 * Array of indexes into the global/local colour table.
+		 */
+		protected int[] rawData;
+		/**
+		 * bitSize Minimum number of bits required to represent the highest value contained in the <code>rawData</code>
+		 */
+		protected int bitSize;
+		
+		/**
+		 * First available compression code
+		 */
+		protected int startDictionaryEntry; 
+		
+		/**
+		 * After a dictionary clear bitsize with revert to this value
+		 */
+		protected int resetBitSize; 
+		
+		/**
+		 * stores the compression output as a binary string
+		 */
+		protected StringBuilder outputStream = new StringBuilder();
+		
+		/**
+		 * <pre>
+		 * List of the compression codes,
+		 * add the <code>startDictionaryEntry</code> to index of the code to get the actual code value.
+		 * </pre> 
+		 */
+		protected LZWDictionary dictionary;
+		
+		/**
+		 * Highest number that can be stored using current <code>bitSize</code> before it needs to be increased  
+		 */
+		protected int currentMaximumBitSize;
+		
+		/**
+		 * When dictionaryCount reaches 4095 then the dictionary will need to be cleared to its original state
+		 */
+		protected int dictionaryCount;
+		
+		/**
+		 * The byte blocks that will be returned (including block sizes)
+		 */
+		protected ArrayList<Integer> packagedBytes;
+		
+		/**
+		 * Code that indicates to the decoder that the dictionary has been cleared
+		 */
+		private final int CLEAR_CODE;
+		
+		/**
+		 * Indicates the end of the image compression data
+		 */
+		private final int TERMINATION_CODE;
+	
+	/**
+	 * @param rawData Array of indexes into the global/local colour table. 
+	 * @param bitSize Minimum number of bits required to represent the highest value contained in the <code>rawData</code>
+	 */
+	public LZWCompressor(int[] rawData, int bitSize){
+		CLEAR_CODE = (int)Math.pow(2, bitSize);
+		TERMINATION_CODE = CLEAR_CODE + 1;
+		startDictionaryEntry = TERMINATION_CODE + 1;
+		//logger.debug("startDictionaryEntry = " + startDictionaryEntry);
+		
+		dictionary = new LZWDictionary(startDictionaryEntry);
+		
 		this.rawData = rawData;
-		this.bitSize = bitSize + 1;
-		//logger.debug("start bit size = " + this.bitSize);
-		bitStream = new StringBuilder(8);
-		dictionary = new ArrayList<InputColour>();
-		currentDictionaryCount = setInitialDictionaryCountValue(this.bitSize);
-		maxBit = setMaxBitSize(this.bitSize);
+		this.bitSize = bitSize + 1; //adding 1 to account for the termination code
+		//logger.debug("startBitSize = " + this.bitSize);
+		currentMaximumBitSize = (int)Math.pow(2, this.bitSize);
+		dictionaryCount = ((int) Math.pow(2, this.bitSize - 1)) + 2;
+		resetBitSize = bitSize + 1;
+		//outputStream.append(GIFUtils.getBitsFromInt(CLEAR_CODE, bitSize)); WAS ON TWICE SEE END PACKAGED BYTES
 	}
 
-	private int setInitialDictionaryCountValue(int bs) {
-		return ((int) Math.pow(2, bs - 1)) + 2;
+	/* 
+	 * @see com.camelcasing.image.gif.ImageCompressor#compress()
+	 * use InputColour Class
+	 */
+	public void compress(){
+		boolean takeFromDictionary = false;
+		String currentValue = "";
+		String nextValue = "";
+		String combinedCurrentNext = "";
+		
+		int processedCount = 0;
+		
+			for(int i = 0; i < rawData.length - 1; i++){
+				if(!takeFromDictionary){
+					currentValue += Integer.toString(rawData[i]);
+					processedCount++;
+					nextValue = Integer.toString(rawData[i + 1]);
+					combinedCurrentNext = currentValue + nextValue;
+				}else{
+					nextValue = Integer.toString(rawData[i]);
+					processedCount++;
+					combinedCurrentNext = currentValue + nextValue;
+				}
+					//logger.debug("currentValue = " + currentValue);
+					if(!dictionary.contains(combinedCurrentNext)){
+							if(takeFromDictionary){
+								addToStream(dictionary.get(currentValue));
+								//logger.debug("Taken from dictionary");
+								i--;
+							}else{
+								addToStream(Integer.parseInt(currentValue));
+							}
+						addToDictionary(combinedCurrentNext);
+						currentValue = "";
+						takeFromDictionary = false;
+					}else{
+						currentValue = combinedCurrentNext;
+						if(!takeFromDictionary) i++;
+						takeFromDictionary = true;
+					}
+					
+			}//exit loop and process the last bit
+		combinedCurrentNext = currentValue + Integer.toString(rawData[rawData.length - 1]);
+		processedCount++;
+			if(dictionary.contains(combinedCurrentNext)){
+				addToStream(dictionary.get(combinedCurrentNext));
+			}else{
+				//addToStream(takeFromDictionary ? dictionary.get(currentValue) : Integer.parseInt(currentValue));
+				addToStream(rawData[rawData.length - 1]);
+			}
+			logger.debug("rawData.length = " + rawData.length);
+			logger.debug("processedCount = " + processedCount);
+	}
+	
+	public void addToStream(int i){
+		//logger.debug(Long.parseLong(GIFUtils.getBitsFromInt(i, bitSize), 2));
+		//logger.debug(GIFUtils.getBitsFromInt(i, bitSize));
+		outputStream.insert(0, GIFUtils.getBitsFromInt(i, bitSize));
 	}
 
-	private int setMaxBitSize(int startBit) {
-		return ((int) Math.pow(2, startBit));
-	}
-
-	private void addToDictionary(InputColour colour) {
-		if (currentDictionaryCount == maxBit) {
+	public void addToDictionary(String colour){
+		if(dictionaryCount == currentMaximumBitSize){
 			bitSize++;
-			//logger.debug("bit size is now " + bitSize);
-			maxBit = setMaxBitSize(bitSize);
+			//logger.debug("bitsize is now " + bitSize);
+			currentMaximumBitSize = (int)Math.pow(2, bitSize);
 		}
 		dictionary.add(colour);
-		currentDictionaryCount++;
-		if (currentDictionaryCount == 4095){
-			//logger.debug("dictionary cleared");
+		dictionaryCount++;
+		
+		if(dictionaryCount == 4095){
 			clearDictionary();
 		}
 	}
 	
-	private void clearDictionary() {
-		bitStream.insert(0, GIFUtils.getBitsFromInt(getClearCode(), bitSize));
-		bitSize = STARTBITSIZE + 1;
-		currentDictionaryCount = setInitialDictionaryCountValue(bitSize);
-		dictionary = new ArrayList<InputColour>();
-		maxBit = setMaxBitSize(bitSize);	
+	public void clearDictionary(){
+		outputStream.insert(0, GIFUtils.getBitsFromInt(CLEAR_CODE, bitSize));
+		bitSize = resetBitSize;
+		dictionary.clear();
+		currentMaximumBitSize = (int)Math.pow(2, bitSize);
+		//dictionaryCount = startDictionaryEntry;
+		dictionaryCount = ((int) Math.pow(2, bitSize - 1)) + 2;
 	}
-
-	/**
-	 * Assuming that the rawData is an array of references into the global
-	 * colourTable
+	
+	/* 
+	 * @see com.camelcasing.image.gif.ImageCompressor#getPackagedBytes()
 	 */
-	public void compress() {
-		while (inputLocation < rawData.length){
-			setCompressValues();
-		}
-	}
-
-	private void setCompressValues() {
-		if (pattern == null && inputLocation < rawData.length - 1) {
-			current = rawData[inputLocation];
-			next = rawData[inputLocation + 1];
-			pattern = GIFUtils.simpleColourArray(current, next);
-			inputLocation++;
-		} else if (pattern != null && inputLocation < rawData.length - 1) {
-			next = rawData[inputLocation + 1];
-			pattern = GIFUtils.simpleColourArray(pattern.getColour(), next);
-			inputLocation++;
-		} else if (pattern == null && inputLocation == rawData.length - 1) {
-			current = rawData[inputLocation];
-			inputLocation++;
-		} else if (pattern != null && inputLocation == rawData.length - 1) {
-			inputLocation++;
-			if (dictionary.contains(pattern)) {
-				found = new InputColour(pattern.getColour());
-			}
-			addToStream();
-			return;
-		}
-
-		if (dictionary.contains(pattern)) {
-			found = new InputColour(pattern.getColour());
-			return;
-		} else {
-			addToStream();
-			addToDictionary(pattern);
-			found = null;
-			pattern = null;
-		}
-	}
-
-	/**
-	 * Add a String representation of the binary bits to a StringBuilder reader
-	 * for packaging
-	 */
-	private void addToStream() {
-		int i;
-		if (found != null) {
-			i = dictionary.indexOf(found) + DICINCREMENT;
-		} else {
-			i = current;
-		}
-		//logger.debug(Integer.valueOf(GIFUtils.getBitsFromInt(i, bitSize), 2));
-		//if(found != null) logger.debug("Taken from dictionary");
-		bitStream.insert(0, GIFUtils.getBitsFromInt(i, bitSize));
-	}
-
-	public ArrayList<Integer> getPackagedBytes() {
-		packagedBytes = new ArrayList<Integer>();
-		bitStream.append(GIFUtils.getBitsFromInt(getClearCode(), STARTBITSIZE + 1)); //KEEP
-		String s = bitStream.toString();
+	public ArrayList<Integer> getPackagedBytes(){
 		
-		int numberOfBytes = s.length() / 8;
-			if(!(s.length() % 8 == 0)) numberOfBytes++;
+		outputStream.append(GIFUtils.getBitsFromInt(CLEAR_CODE, resetBitSize));
+		String bytes = outputStream.toString();
+		packagedBytes = new ArrayList<Integer>();
+		
+		int numberOfBytes = bytes.length() / 8;
+		if(!(bytes.length() % 8 == 0)) numberOfBytes++;
 		
 		int numberOfFullBlocks = numberOfBytes / 255;
 		
@@ -146,40 +196,32 @@ public class LZWCompressor{
 		
 		int i = 0;
 		try{
-			for (i = s.length();; i -= 8){
-				packagedBytes.add(Integer.valueOf(s.substring(i - 8, i), 2));
+			for (i = bytes.length();; i -= 8){
+				packagedBytes.add(Integer.valueOf(bytes.substring(i - 8, i), 2));
 			}
 		}catch (StringIndexOutOfBoundsException e) {
-			StringBuilder sb = new StringBuilder(s.substring(0, i));
+			StringBuilder sb = new StringBuilder(bytes.substring(0, i));
 				while (sb.length() != 8) {
 					sb.insert(0, '0');
 				}
 			packagedBytes.add(Integer.valueOf(sb.toString(), 2));
 		}
 		
-			if(packagedBytes.size() <= 255){
-				packagedBytes.add(0, packagedBytes.size());
-			}else{
-				packagedBytes.add(0, 255);
-					for(int j = 1; j < numberOfFullBlocks; j++){
-						packagedBytes.add(((255 * j) + j), 255);
-					}
-				packagedBytes.add((packagedBytes.size() - finalBlockSize), finalBlockSize);
-			}
-		packagedBytes.add(getTerminationCode());
+		if(packagedBytes.size() <= 255){
+			packagedBytes.add(0, packagedBytes.size());
+		}else{
+			packagedBytes.add(0, 255);
+				for(int j = 1; j < numberOfFullBlocks; j++){
+					packagedBytes.add(((255 * j) + j), 255);
+				}
+			packagedBytes.add((packagedBytes.size() - finalBlockSize), finalBlockSize);
+		}
+//		GIFPackager packer = new GIFPackager(bytes);
+//		packer.packageBytes();
+//		packagedBytes = packer.getPackagedBytes();
+		
+		packagedBytes.add(TERMINATION_CODE);
 		//for(int r : packagedBytes) logger.debug(r);
 		return packagedBytes;
-	}
-
-	private int getTerminationCode() {
-		return getClearCode() + 1;
-	}
-
-	public int getClearCode() {
-		return ((int) Math.pow(2, STARTBITSIZE));
-	}
-
-	private int getFinalBitSize() {
-		return bitSize;
 	}
 }

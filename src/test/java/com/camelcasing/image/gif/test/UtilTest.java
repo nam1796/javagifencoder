@@ -46,12 +46,6 @@ public class UtilTest {
 	}
 	
 	@Test
-	public void getPlusLenTest5(){
-		LZWCompressor c = new LZWCompressor(new int[] {1, 1, 1}, 2);
-		assertEquals("100", GIFUtils.getBitsFromInt(c.getClearCode(), 3));
-	}
-	
-	@Test
 	public void bitsRequired(){
 		assertEquals(2, GIFUtils.numberOfBitsRequired(1));
 	}
