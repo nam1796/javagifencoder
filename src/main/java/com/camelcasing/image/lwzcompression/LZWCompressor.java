@@ -5,14 +5,12 @@ import java.util.ArrayList;
 import org.apache.log4j.Logger;
 
 import com.camelcasing.image.gif.GIFUtils;
-import com.camelcasing.image.gif.ImageCompressor;
-import com.camelcasing.image.gif.InputColour;
 
 /**
  * @author Philip Teclaff
  * @since 1.0
  */
-public class LZWCompressor implements ImageCompressor{
+public class LZWCompressor{
 	
 	private Logger logger = Logger.getLogger(getClass());
 

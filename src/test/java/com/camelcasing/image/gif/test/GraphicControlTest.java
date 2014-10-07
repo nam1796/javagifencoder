@@ -1,9 +1,10 @@
 package com.camelcasing.image.gif.test;
 
 import org.junit.*;
+
 import com.camelcasing.image.gif.GraphicControlExtension;
-import com.camelcasing.image.gif.InputColour;
 import com.camelcasing.image.gif.NetscapeApplicationExtension;
+import com.camelcasing.image.lwzcompression.InputColour;
 
 import static org.junit.Assert.assertTrue;
 	

@@ -11,7 +11,4 @@ public interface InputImage{
 	int getWidth();
 	int getHeight();
 	void resize(int width, int height);
-	void addText(String text,  int location);
-	InputImage addGIFOptions(GIFOptions gifOptions);
-	GIFOptions getGIFOptions();
 }

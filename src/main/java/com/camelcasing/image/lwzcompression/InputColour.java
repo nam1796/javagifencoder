@@ -1,6 +1,8 @@
-package com.camelcasing.image.gif;
+package com.camelcasing.image.lwzcompression;
 
 import java.util.Arrays;
+
+import com.camelcasing.image.gif.GIFUtils;
 
 /**
  * Basically a wapper Class for an int[] with <code>HashCode</code> and <code>Equals</code> overridden 

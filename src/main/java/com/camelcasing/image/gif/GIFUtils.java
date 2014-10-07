@@ -1,5 +1,7 @@
 package com.camelcasing.image.gif;
 
+import com.camelcasing.image.lwzcompression.InputColour;
+
 /**
  * Collection of static method to aid the creation of GIF files. This class can not be instantized.
  * 
@@ -48,7 +50,7 @@ public class GIFUtils{
 	}
 	
 	/**
-	 * Combines 2 integers into a {@link com.camelcasing.image.gif.InputColour InputColour}. Will create an array int[a, b].
+	 * Combines 2 integers into a {@link com.camelcasing.image.lwzcompression.InputColour InputColour}. Will create an array int[a, b].
 	 * @param a value to be added to index 0.
 	 * @param b value to be added to index 1.
 	 * @return InputColour with the two values

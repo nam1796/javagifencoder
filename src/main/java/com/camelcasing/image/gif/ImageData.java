@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import org.apache.log4j.Logger;
 
 import com.camelcasing.image.lwzcompression.LZWCompressor;
-import com.camelcasing.image.lwzcompression.LZWCompressorMark2;
 import com.camelcasing.image.octreecolourquantilizer.OctreeColourQuantilizer;
 
 /**
@@ -26,13 +25,11 @@ public class ImageData {
 		private int width;
 		private int height;
 		private int bitSize;
-		private ImageCompressor compressor;
-		private GIFOptions gifOptions;
+		private LZWCompressor compressor;
 		private int graphicsControlDisposalMethod = 2;
 		private boolean transparency = false;
 		private int offsetLeft = 0;
 		private int offsetTop = 0;
-		private String memeText = null;
 		
 	/**
 	 * @param image The image that the returning byte represent
@@ -49,14 +46,11 @@ public class ImageData {
 		this.image = image;
 		this.maxColours = maxColours;
 		this.timeDelay = timeDelay;
-		this.gifOptions = image.getGIFOptions();
 		imageData = new ArrayList<Integer>();
 	}
 	
 	public ImageData init(){
-			//if(gifOptions != null) getGIFOptions();
 		checkImageSize();
-			//if(memeText != null) addMemeToImage();
 		quantilizeImage();
 		addGraphicsControlExtensionBytes();
 		addImageDescriptorBytes();
@@ -64,24 +58,6 @@ public class ImageData {
 		compressImage();
 		addCompressedImageBytes();
 		return this;
-	}
-	
-	private void getGIFOptions(){
-		int temp;
-		
-		if((temp = gifOptions.getTimeDelay()) != -1) timeDelay = temp;
-		
-		if(gifOptions.getImageSize() != null){
-			int[] newSize = gifOptions.getImageSize();
-			if(newSize[0] > 10) width = newSize[0];
-			if(newSize[1] > 10) height = newSize[1]; 
-		}
-		
-		if(gifOptions.getMemeText() != null) memeText = gifOptions.getMemeText();
-		if((temp = gifOptions.getMaxColours()) != -1) maxColours = temp;
-		if((temp = gifOptions.getOffsetLeft()) != -1) offsetLeft = temp;
-		if((temp = gifOptions.getOffsetTop()) != -1) offsetTop = temp;
-		if((temp = gifOptions.getGraphicsControlDisposalMethod()) != -1) graphicsControlDisposalMethod = temp;
 	}
 	
 	private int getColourTableSize(){
@@ -131,24 +107,18 @@ public class ImageData {
 	
 	private void compressImage(){
 		int[] rawInput = quantilizer.getQuantilizedInput();
-		compressor = new LZWCompressorMark2(rawInput, bitSize);
-		//compressor = new LZWCompressor(rawInput, bitSize);
+		compressor = new LZWCompressor(rawInput, bitSize);
 		compressor.compress();
 	}
 	
 	private void addCompressedImageBytes(){
-		ArrayList<Integer> packagedBytes = compressor.getPackagedBytes();
 		imageData.add(bitSize);
-		for(int i : packagedBytes) imageData.add(i);
+		for(int i : compressor.getPackagedBytes()) imageData.add(i);
 		imageData.add(0);
 	}
 	
-	private void addMemeToImage(){
-		image.addText(memeText, 666);
-	}
-	
 	private void checkImageSize(){
-		if(image.getWidth() != width || image.getHeight() != height) image.resize(width, height);
+		//if(image.getWidth() != width || image.getHeight() != height) image.resize(width, height);
 	}
 	
 	public ArrayList<Integer> getImageData(){

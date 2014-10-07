@@ -3,7 +3,7 @@ package com.camelcasing.image.gif.test;
 import org.junit.Test;
 
 import com.camelcasing.image.gif.GIFUtils;
-import com.camelcasing.image.gif.InputColour;
+import com.camelcasing.image.lwzcompression.InputColour;
 import com.camelcasing.image.lwzcompression.LZWCompressor;
 
 import static org.junit.Assert.assertEquals;
