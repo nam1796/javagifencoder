@@ -54,9 +54,11 @@ public class CreateGIF{
 	private void getImageBytes(){
 		for(int i = 0; i < images.length; i++){
 			logger.info("processing image " + (i + 1) + " of " + images.length);
+			logger.debug("imageBytes = " + imageDataBytes.size());
 			imageDataBytes.add(new ImageData(images[i], timeDelay, maxColours, width, height)
 			.init()
 			.getImageData());
+			logger.debug("imageBytes = " + imageDataBytes.size());
 		}
 	}
 	
@@ -68,9 +70,14 @@ public class CreateGIF{
 					for(int i : new NetscapeApplicationExtension(0).create()) os.write(i);
 				}
 			for(int i = 0; i < imageDataBytes.size(); i++){
-				for(int j : imageDataBytes.get(i)) os.write(j);
+				int count = 0;
+				for(int j : imageDataBytes.get(i)){
+					os.write(j);
+					count++;
+				}
+				logger.debug("added " + count + " bytes");
+				count = 0;
 			}
-			
 			os.write(Headers.getTrailer());
 		}catch(IOException e){
 			logger.error("Failed to write bytes to file: " + outputFile.getPath() + "\n" + e.getMessage());

@@ -100,6 +100,7 @@ public class LZWCompressor{
 	 * use InputColour Class
 	 */
 	public void compress(){
+		logger.debug("Compression Started");
 		boolean takeFromDictionary = false;
 		InputColour currentValue = null;
 		int nextValue;
@@ -182,9 +183,6 @@ public class LZWCompressor{
 		return new InputColour(c);
 	}
 	
-	/* 
-	 * @see com.camelcasing.image.gif.ImageCompressor#getPackagedBytes()
-	 */
 	public ArrayList<Integer> getPackagedBytes(){
 		
 		outputStream.append(GIFUtils.getBitsFromInt(CLEAR_CODE, resetBitSize));
@@ -226,6 +224,7 @@ public class LZWCompressor{
 		
 		packagedBytes.add(TERMINATION_CODE);
 		//for(int r : packagedBytes) logger.debug(r);
+		logger.debug("Compression Finished");
 		return packagedBytes;
 	}
 }

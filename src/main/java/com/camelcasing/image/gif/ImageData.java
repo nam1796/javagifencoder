@@ -118,7 +118,7 @@ public class ImageData {
 	}
 	
 	private void checkImageSize(){
-		//if(image.getWidth() != width || image.getHeight() != height) image.resize(width, height);
+		if(image.getWidth() != width || image.getHeight() != height) image.resize(width, height);
 	}
 	
 	public ArrayList<Integer> getImageData(){

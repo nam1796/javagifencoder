@@ -2,6 +2,9 @@
 package com.camelcasing.image.octreecolourquantilizer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -40,6 +43,7 @@ public class OctreeColourQuantilizer{
 	}
 	
 	public OctreeColourQuantilizer quantilize(){
+		logger.debug("Quantilization Started");
 		extractRGBValues();
 		createOctree();
 		//logger.debug("before pruning colour count = " + colourPointers.size());
@@ -84,7 +88,7 @@ public class OctreeColourQuantilizer{
 	
 	public int[] getCombinedColourNumbers(int r, int g, int b){
 		int[] colourBitCombinations = new int[DEPTH];
-		int count = 7;
+		int count = 8;
 			for(int i = 0; i < DEPTH; i++){
 				int c = Integer.valueOf((String.valueOf((r >> count) & 0x1) + ((g >> count) & 0x1) + ((b >> count) & 0x1)), 2);
 				count--;
@@ -114,9 +118,7 @@ public class OctreeColourQuantilizer{
 			if(!checkIfEnoughColours()){
 				addRemoveNode(count);
 				count++;
-					if(count == colourPointers.size()){
-						count = 0;
-					}
+				if(count == colourPointers.size()) count = 0;
 			}else{
 				return;
 			}
@@ -149,11 +151,14 @@ public class OctreeColourQuantilizer{
 				indexedColours[count] = colourPointers.indexOf(target);
 				count++;
 			}
+		List<Integer> array = new ArrayList<Integer>();
+		for(int i : indexedColours) array.add(i);
 		return indexedColours;
 	}
 	
 	public int[] getQuantilizedInput(){
 		//logger.info("quantilized input = " + quantilizedInput.length);
+		logger.debug("Quantilization Finished");
 		return quantilizedInput;
 	}
 	
