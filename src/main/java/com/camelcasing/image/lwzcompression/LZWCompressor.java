@@ -92,7 +92,6 @@ public class LZWCompressor{
 		currentMaximumBitSize = (int)Math.pow(2, this.bitSize);
 		dictionaryCount = ((int) Math.pow(2, this.bitSize - 1)) + 2;
 		resetBitSize = bitSize + 1;
-		//outputStream.append(GIFUtils.getBitsFromInt(CLEAR_CODE, bitSize)); WAS ON TWICE SEE END PACKAGED BYTES
 	}
 
 	/* 
