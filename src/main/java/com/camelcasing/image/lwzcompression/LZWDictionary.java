@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
 public class LZWDictionary {
 
 		private Logger logger = Logger.getLogger(getClass().getName());
-		private ArrayList<String> dictionary = new ArrayList<String>();
+		private ArrayList<InputColour> dictionary = new ArrayList<InputColour>();
 		private int offset;
 		
 	public LZWDictionary(int offset){
@@ -24,15 +24,15 @@ public class LZWDictionary {
 		dictionary.clear();
 	}
 		
-	public void add(String s){
+	public void add(InputColour s){
 		dictionary.add(s);
 	}
 		
-	public boolean contains(String s){
+	public boolean contains(InputColour s){
 		return dictionary.contains(s);
 	}
 		
-	public int get(String s){
+	public int get(InputColour s){
 		return (dictionary.indexOf(s)) + offset;
 	}
 		

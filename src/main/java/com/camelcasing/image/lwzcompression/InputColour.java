@@ -35,6 +35,14 @@ public class InputColour{
 	public int getSize(){
 		return colour.length;
 	}
+	
+	public int getFirst(){
+		return colour[0];
+	}
+	
+	public int getLength(){
+		return colour.length;
+	}
 
 	@Override
 	public int hashCode(){

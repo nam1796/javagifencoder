@@ -1,7 +1,5 @@
 package com.camelcasing.image.gif;
 
-import com.camelcasing.image.lwzcompression.InputColour;
-
 /**
  * Collection of static method to aid the creation of GIF files. This class can not be instantized.
  * 
@@ -38,7 +36,6 @@ public class GIFUtils{
 		return sBuilder.toString();
 	}
 
-	
 	/**
 	 * extracts bits of a int to the specified size from a offset of 0, will add leading zeros
 	 * @param value The <code>Integer</code> value to process
@@ -47,29 +44,6 @@ public class GIFUtils{
 	 */
 	public static String getBitsFromInt(int value, int numberOfBitsRequired){
 		return(getBitsFromInt(value, numberOfBitsRequired, 0));
-	}
-	
-	/**
-	 * Combines 2 integers into a {@link com.camelcasing.image.lwzcompression.InputColour InputColour}. Will create an array int[a, b].
-	 * @param a value to be added to index 0.
-	 * @param b value to be added to index 1.
-	 * @return InputColour with the two values
-	 */
-	public static InputColour simpleColourArray(int a, int b){
-		return new InputColour(new int[] {a, b});
-	}
-	
-	/**
-	 * see {@link com.camelcasing.image.gif.GIFUtils#simpleColourArray(int, int) simpleColourArray(int, int)}
-	 * @param a first input values.
-	 * @param b value to be appended to a.
-	 * @return InputColour with <code>Integer</code> appended to the array
-	 */
-	public static InputColour simpleColourArray(int[] a, int b){
-		int[] c = new int[a.length + 1];
-		System.arraycopy(a, 0, c, 0, a.length);
-		c[c.length - 1] = b;
-		return new InputColour(c);
 	}
 	
 	/**

@@ -101,22 +101,18 @@ public class LZWCompressor{
 	 */
 	public void compress(){
 		boolean takeFromDictionary = false;
-		String currentValue = "";
-		String nextValue = "";
-		String combinedCurrentNext = "";
-		
-		int processedCount = 0;
+		InputColour currentValue = null;
+		int nextValue;
+		InputColour combinedCurrentNext;
 		
 			for(int i = 0; i < rawData.length - 1; i++){
 				if(!takeFromDictionary){
-					currentValue += Integer.toString(rawData[i]);
-					processedCount++;
-					nextValue = Integer.toString(rawData[i + 1]);
-					combinedCurrentNext = currentValue + nextValue;
+					currentValue = new InputColour(rawData[i]);
+					nextValue = rawData[i + 1];
+					combinedCurrentNext = simpleColourArray(currentValue, nextValue);
 				}else{
-					nextValue = Integer.toString(rawData[i]);
-					processedCount++;
-					combinedCurrentNext = currentValue + nextValue;
+					nextValue = rawData[i];
+					combinedCurrentNext = simpleColourArray(currentValue, nextValue);
 				}
 					//logger.debug("currentValue = " + currentValue);
 					if(!dictionary.contains(combinedCurrentNext)){
@@ -125,10 +121,9 @@ public class LZWCompressor{
 								//logger.debug("Taken from dictionary");
 								i--;
 							}else{
-								addToStream(Integer.parseInt(currentValue));
+								addToStream(currentValue.getFirst());
 							}
 						addToDictionary(combinedCurrentNext);
-						currentValue = "";
 						takeFromDictionary = false;
 					}else{
 						currentValue = combinedCurrentNext;
@@ -137,16 +132,13 @@ public class LZWCompressor{
 					}
 					
 			}//exit loop and process the last bit
-		combinedCurrentNext = currentValue + Integer.toString(rawData[rawData.length - 1]);
-		processedCount++;
+		combinedCurrentNext = simpleColourArray(currentValue, rawData[rawData.length - 1]);
 			if(dictionary.contains(combinedCurrentNext)){
 				addToStream(dictionary.get(combinedCurrentNext));
 			}else{
 				//addToStream(takeFromDictionary ? dictionary.get(currentValue) : Integer.parseInt(currentValue));
 				addToStream(rawData[rawData.length - 1]);
 			}
-			logger.debug("rawData.length = " + rawData.length);
-			logger.debug("processedCount = " + processedCount);
 	}
 	
 	public void addToStream(int i){
@@ -155,7 +147,7 @@ public class LZWCompressor{
 		outputStream.insert(0, GIFUtils.getBitsFromInt(i, bitSize));
 	}
 
-	public void addToDictionary(String colour){
+	public void addToDictionary(InputColour colour){
 		if(dictionaryCount == currentMaximumBitSize){
 			bitSize++;
 			//logger.debug("bitsize is now " + bitSize);
@@ -176,6 +168,18 @@ public class LZWCompressor{
 		currentMaximumBitSize = (int)Math.pow(2, bitSize);
 		//dictionaryCount = startDictionaryEntry;
 		dictionaryCount = ((int) Math.pow(2, bitSize - 1)) + 2;
+	}
+	
+	/**
+	 * @param a first input values.
+	 * @param b value to be appended to a.
+	 * @return InputColour with <code>Integer</code> appended to the array
+	 */
+	private InputColour simpleColourArray(InputColour a, int b){
+		int[] c = new int[a.getLength() + 1];
+		System.arraycopy(a.getColour(), 0, c, 0, a.getLength());
+		c[c.length - 1] = b;
+		return new InputColour(c);
 	}
 	
 	/* 

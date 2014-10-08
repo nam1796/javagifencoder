@@ -63,18 +63,7 @@ public class UtilTest {
 	@Test
 	public void bitsRequired4(){
 		assertEquals(8, GIFUtils.numberOfBitsRequired(7));
-	}
-	
-	@Test																														
-	public void combineTest1(){																									
-		InputColour color1 = new InputColour(new int[]{20, 20, 20});																															
-		assertEquals(new InputColour(new int[]{20, 20, 20, 0}), GIFUtils.simpleColourArray(color1.getColour(), 0));					
-	}																															
-	
-	@Test																														
-	public void combineTest2(){																																							
-		assertEquals(new InputColour(new int[]{16, 20}), GIFUtils.simpleColourArray(16, 20));				
-	}		
+	}	
 	
 	@Test
 	public void powerTest(){
