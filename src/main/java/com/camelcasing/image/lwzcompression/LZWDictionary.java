@@ -36,7 +36,7 @@ public class LZWDictionary {
 		return (dictionary.indexOf(s)) + offset;
 	}
 		
-	public int getSize(){
-		return dictionary.size();
-	}
+//	public int getSize(){
+//		return dictionary.size();
+//	}
 }

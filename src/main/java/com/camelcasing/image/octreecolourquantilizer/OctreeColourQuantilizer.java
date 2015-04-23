@@ -60,6 +60,7 @@ public class OctreeColourQuantilizer{
 	 * Processes the image row by row and adds RGB array to rawInput
 	 */
 	private void extractRGBValues(){
+		logger.debug("Extracting RGB Started");
 		int w = image.getWidth();
 		int h = image.getHeight();
 		int current;
@@ -76,6 +77,7 @@ public class OctreeColourQuantilizer{
 	}
 	
 	private void createOctree(){
+		logger.debug("Creating Octree");
 			for(int i = 0; i < rawInput.length; i++){
 				int r = rawInput[i][0];
 				int g = rawInput[i][1];
@@ -113,6 +115,7 @@ public class OctreeColourQuantilizer{
 	}
 	
 	private void pruneTree(){
+		logger.debug("Pruning Started");
 		while(true){
 			int count = 0;
 			if(!checkIfEnoughColours()){
