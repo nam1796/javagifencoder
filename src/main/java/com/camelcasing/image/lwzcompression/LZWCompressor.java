@@ -39,7 +39,7 @@ public class LZWCompressor{
 		/**
 		 * stores the compression output as a binary string
 		 */
-		protected StringBuilder outputStream = new StringBuilder();
+		protected StringBuilder outputStream;
 		
 		/**
 		 * <pre>
@@ -73,6 +73,8 @@ public class LZWCompressor{
 		 * Indicates the end of the image compression data
 		 */
 		private final int TERMINATION_CODE;
+		
+		private final int RESET_STREAM = 255 * 8;
 	
 	/**
 	 * @param rawData Array of indexes into the global/local colour table. 
@@ -92,6 +94,8 @@ public class LZWCompressor{
 		currentMaximumBitSize = (int)Math.pow(2, this.bitSize);
 		dictionaryCount = ((int) Math.pow(2, this.bitSize - 1)) + 2;
 		resetBitSize = bitSize + 1;
+		packagedBytes=  new ArrayList<Integer>();
+		outputStream = new StringBuilder(2040);
 	}
 
 	/* 
@@ -99,6 +103,7 @@ public class LZWCompressor{
 	 * use InputColour Class
 	 */
 	public void compress(){
+		outputStream.append(GIFUtils.getBitsFromInt(CLEAR_CODE, resetBitSize));
 		logger.debug("Compression Started");
 		boolean takeFromDictionary = false;
 		InputColour currentValue = null;
@@ -142,15 +147,14 @@ public class LZWCompressor{
 	}
 	
 	public void addToStream(int i){
-		//logger.debug(Long.parseLong(GIFUtils.getBitsFromInt(i, bitSize), 2));
-		//logger.debug(GIFUtils.getBitsFromInt(i, bitSize));
 		outputStream.insert(0, GIFUtils.getBitsFromInt(i, bitSize));
-	}
-	
-	public void addToStream2(int i){
-		//logger.debug(Long.parseLong(GIFUtils.getBitsFromInt(i, bitSize), 2));
-		//logger.debug(GIFUtils.getBitsFromInt(i, bitSize));
-		outputStream.insert(0, GIFUtils.getBitsFromInt(i, bitSize));
+		if(outputStream.length() >= RESET_STREAM){
+			int extra = outputStream.length() % RESET_STREAM;
+			addFullBlock(outputStream.substring(extra));
+			String carryOver = outputStream.substring(0, extra);
+			outputStream = new StringBuilder(2040);
+			outputStream.append(carryOver);
+		}
 	}
 
 	public void addToDictionary(InputColour colour){
@@ -172,7 +176,6 @@ public class LZWCompressor{
 		bitSize = resetBitSize;
 		dictionary.clear();
 		currentMaximumBitSize = (int)Math.pow(2, bitSize);
-		//dictionaryCount = startDictionaryEntry;
 		dictionaryCount = ((int) Math.pow(2, bitSize - 1)) + 2;
 	}
 	
@@ -188,96 +191,43 @@ public class LZWCompressor{
 		return new InputColour(c);
 	}
 	
-	public void initialisePackagedBytes(){
-		packagedBytes = new ArrayList<Integer>();
-	}
-	
 	private void finalisePackagedBytes(){
 		packagedBytes.add(TERMINATION_CODE);
 	}
 	
 	private void addFullBlock(String block){
 		packagedBytes.add(255);
-//		for(int j = 0; j < 255; j++){
-		for(int i = 255; i >= 0; i -= 8){
+		for(int i = RESET_STREAM; i >= 8; i -= 8){
 			packagedBytes.add(Integer.valueOf(block.substring(i - 8, i), 2));
 		}
 	}
 	
 	private void addRemaining(StringBuilder fBlock){
-		fBlock.append(GIFUtils.getBitsFromInt(CLEAR_CODE, resetBitSize));
-		if(fBlock.length() > 255){
-			int extra = fBlock.length() % 255;
-			int fitInBytes = fBlock.length() % 8;
-			if(fitInBytes > 0){
-				for(int i = 8 - fitInBytes; i > 0; i--){
-					fBlock.insert(0, '0');
-				}
+		int fitInBytes = fBlock.length() % 8;
+		if(fitInBytes > 0){
+			for(int i = 8 - fitInBytes; i > 0; i--){
+				fBlock.insert(0, '0');
 			}
+		}
+		if(fBlock.length() > RESET_STREAM){
 			addFullBlock(fBlock.substring(0, 255 * 8));
 			String remaining = fBlock.substring(255 * 8);
-			for(int i = remaining.length(); i >= 0; i -= 8){
+			packagedBytes.add(remaining.length() % 8);
+			for(int i = remaining.length(); i >= 8; i -= 8){
 				packagedBytes.add(Integer.valueOf(remaining.substring(i - 8, i), 2));
 			}
 		}else{
-			String block = fBlock.toString();
-			for(int i = 255; i >= 0; i -= 8){
-				packagedBytes.add(Integer.valueOf(block.substring(i - 8, i), 2));
+			packagedBytes.add(fBlock.length() / 8);
+			for(int i = fBlock.length(); i >= 8; i -= 8){
+				packagedBytes.add(Integer.valueOf(fBlock.substring(i - 8, i), 2));
 			}
 		}
 		finalisePackagedBytes();
 	}
 	
 	public ArrayList<Integer> getPackagedBytes(){
-		
-		outputStream.append(GIFUtils.getBitsFromInt(CLEAR_CODE, resetBitSize));
-		packagedBytes = new ArrayList<Integer>();
-		
-		int numberOfBytes = outputStream.length() / 8;
-		int extraBits = outputStream.length() % 8;
-			if(extraBits > 0){
-				for(int i = 8 - extraBits; i > 0; i--){
-					outputStream.insert(0, '0');
-				}
-				++numberOfBytes;
-			}
-		int numberOfFullBlocks = numberOfBytes / 255;
-		int finalBlockSize = numberOfBytes % 255;
-		
-		logger.debug("bytes to process = " + numberOfBytes);
-		logger.debug("number of bytes % 8 = " + outputStream.length() % 8);
-		logger.debug("number of fullBlocks = " + numberOfFullBlocks);
-		logger.debug("finalBlockSize = " + finalBlockSize);		 
-		
-		String bytes = outputStream.toString();
-		
-		if(numberOfFullBlocks > 0){
-			int index = bytes.length();
-			logger.debug("begin index = " + index);
-			for(int i = 0; i < numberOfFullBlocks; i++){
-				packagedBytes.add(255);
-				for(int j = 0; j < 255; j++){
-					packagedBytes.add(Integer.valueOf(bytes.substring(index - 8, index), 2));
-					index -= 8;
-				}
-			}
-			if(finalBlockSize != 0){
-				packagedBytes.add(finalBlockSize);
-				logger.debug("finalBlockIndex = " + index);
-				for(int i = 0; i < finalBlockSize; i++){
-					packagedBytes.add(Integer.valueOf(bytes.substring(index - 8, index), 2));
-					index -= 8;
-				}
-			}
-		}else{
-			packagedBytes.add(numberOfBytes);
-			for(int i = bytes.length(); i == 0; i -= 8){
-				packagedBytes.add(Integer.valueOf(bytes.substring(i - 8, i), 2));
-			}
-		}
-		
-		packagedBytes.add(TERMINATION_CODE);
-		logger.debug("Compression Finished");
+		addRemaining(outputStream);
+		logger.debug("Compression Finished, bytes = " + packagedBytes.size());
 		return packagedBytes;
 	}
 }
