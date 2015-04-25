@@ -1,6 +1,6 @@
 package com.camelcasing.image.octreecolourquantilizer;
 
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
 
 
 /**
@@ -9,12 +9,15 @@ import org.apache.log4j.Logger;
  */
 public class OctreeNode{
 	
-	    private Logger logger = Logger.getLogger(getClass());
+//	    private Logger logger = Logger.getLogger(getClass());
 		private int count = 0;
 		private OctreeNode[] children = new OctreeNode[8];
 		private OctreeNode parent;
 		private int red, green, blue;
 		private int index;
+		private boolean isOnPointerList;
+		private OctreeNode next;
+		private OctreeNode previous;
 	
 	public OctreeNode(OctreeNode parent, int index){
 		this.parent = parent;
@@ -68,6 +71,37 @@ public class OctreeNode{
 	public void mergeUp(){
 		parent.addColour(red, green, blue, count);
 		parent.kill(index);
+	}
+	
+	/**
+	 * declare this node as the bottom of the tree and holder of a colour values
+	 */
+	protected void setOnPointerList(boolean b){
+		isOnPointerList = b;
+	}
+	
+	/**
+	 * 
+	 * @return if this node is at the bottom of the tree and holds actual colour values
+	 */
+	protected boolean isOnPointerList(){
+		return isOnPointerList;
+	}
+	
+	protected OctreeNode getNext(){
+		return next;
+	}
+	
+	protected OctreeNode getPrevious(){
+		return previous;
+	}
+	
+	protected void setNext(OctreeNode otn){
+		next = otn;
+	}
+	
+	protected void setPrevious(OctreeNode otn){
+		previous = otn;
 	}
 	
 	protected void kill(int index){

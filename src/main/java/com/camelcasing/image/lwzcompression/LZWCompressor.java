@@ -146,6 +146,12 @@ public class LZWCompressor{
 		//logger.debug(GIFUtils.getBitsFromInt(i, bitSize));
 		outputStream.insert(0, GIFUtils.getBitsFromInt(i, bitSize));
 	}
+	
+	public void addToStream2(int i){
+		//logger.debug(Long.parseLong(GIFUtils.getBitsFromInt(i, bitSize), 2));
+		//logger.debug(GIFUtils.getBitsFromInt(i, bitSize));
+		outputStream.insert(0, GIFUtils.getBitsFromInt(i, bitSize));
+	}
 
 	public void addToDictionary(InputColour colour){
 		if(dictionaryCount == currentMaximumBitSize){
@@ -182,14 +188,53 @@ public class LZWCompressor{
 		return new InputColour(c);
 	}
 	
-	//0-255 block of bytes does not include the byte count
+	public void initialisePackagedBytes(){
+		packagedBytes = new ArrayList<Integer>();
+	}
+	
+	private void finalisePackagedBytes(){
+		packagedBytes.add(TERMINATION_CODE);
+	}
+	
+	private void addFullBlock(String block){
+		packagedBytes.add(255);
+//		for(int j = 0; j < 255; j++){
+		for(int i = 255; i >= 0; i -= 8){
+			packagedBytes.add(Integer.valueOf(block.substring(i - 8, i), 2));
+		}
+	}
+	
+	private void addRemaining(StringBuilder fBlock){
+		fBlock.append(GIFUtils.getBitsFromInt(CLEAR_CODE, resetBitSize));
+		if(fBlock.length() > 255){
+			int extra = fBlock.length() % 255;
+			int fitInBytes = fBlock.length() % 8;
+			if(fitInBytes > 0){
+				for(int i = 8 - fitInBytes; i > 0; i--){
+					fBlock.insert(0, '0');
+				}
+			}
+			addFullBlock(fBlock.substring(0, 255 * 8));
+			String remaining = fBlock.substring(255 * 8);
+			for(int i = remaining.length(); i >= 0; i -= 8){
+				packagedBytes.add(Integer.valueOf(remaining.substring(i - 8, i), 2));
+			}
+		}else{
+			String block = fBlock.toString();
+			for(int i = 255; i >= 0; i -= 8){
+				packagedBytes.add(Integer.valueOf(block.substring(i - 8, i), 2));
+			}
+		}
+		finalisePackagedBytes();
+	}
+	
 	public ArrayList<Integer> getPackagedBytes(){
 		
 		outputStream.append(GIFUtils.getBitsFromInt(CLEAR_CODE, resetBitSize));
 		packagedBytes = new ArrayList<Integer>();
 		
 		int numberOfBytes = outputStream.length() / 8;
-			int extraBits = outputStream.length() % 8;
+		int extraBits = outputStream.length() % 8;
 			if(extraBits > 0){
 				for(int i = 8 - extraBits; i > 0; i--){
 					outputStream.insert(0, '0');
@@ -200,53 +245,38 @@ public class LZWCompressor{
 		int finalBlockSize = numberOfBytes % 255;
 		
 		logger.debug("bytes to process = " + numberOfBytes);
-//		logger.debug("number of bytes % 8 = " + outputStream.length() % 8);
-//		logger.debug("number of fullBlocks = " + numberOfFullBlocks);
+		logger.debug("number of bytes % 8 = " + outputStream.length() % 8);
+		logger.debug("number of fullBlocks = " + numberOfFullBlocks);
 		logger.debug("finalBlockSize = " + finalBlockSize);		 
 		
-		
 		String bytes = outputStream.toString();
-//		int byteCount = 0;
 		
 		if(numberOfFullBlocks > 0){
 			int index = bytes.length();
 			logger.debug("begin index = " + index);
 			for(int i = 0; i < numberOfFullBlocks; i++){
-				logger.debug("processing block " + i);
 				packagedBytes.add(255);
 				for(int j = 0; j < 255; j++){
 					packagedBytes.add(Integer.valueOf(bytes.substring(index - 8, index), 2));
-//					byteCount++;
 					index -= 8;
 				}
 			}
 			if(finalBlockSize != 0){
 				packagedBytes.add(finalBlockSize);
 				logger.debug("finalBlockIndex = " + index);
-//				int finalCount = 0;
 				for(int i = 0; i < finalBlockSize; i++){
-//					byteCount++;
-//					finalCount++;
-//					logger.debug(Integer.valueOf(bytes.substring(index - 8, index), 2) + " at " + finalCount);
-//					logger.debug("index = " + index);
 					packagedBytes.add(Integer.valueOf(bytes.substring(index - 8, index), 2));
 					index -= 8;
 				}
-//				logger.debug("final Block processed Count = " + finalCount);
 			}
 		}else{
 			packagedBytes.add(numberOfBytes);
 			for(int i = bytes.length(); i == 0; i -= 8){
-//				byteCount++;
 				packagedBytes.add(Integer.valueOf(bytes.substring(i - 8, i), 2));
 			}
 		}
 		
-//		logger.debug("bytes processed = " + byteCount);
-		
 		packagedBytes.add(TERMINATION_CODE);
-//		for(int r : packagedBytes) logger.debug(r);
-//		logger.debug("packagedBytesSize = " + packagedBytes.size());
 		logger.debug("Compression Finished");
 		return packagedBytes;
 	}
