@@ -75,7 +75,6 @@ public class LZWCompressor{
 		private final int TERMINATION_CODE;
 		
 		private final int RESET_STREAM = 255 * 8;
-		private int processCount = 0;
 	
 	/**
 	 * @param rawData Array of indexes into the global/local colour table. 
@@ -110,9 +109,10 @@ public class LZWCompressor{
 		boolean takeFromDictionary = false;
 		InputColour currentValue = null;
 		int nextValue;
-		InputColour combinedCurrentNext;
+		InputColour combinedCurrentNext = null;
+		int i;
 		
-			for(int i = 0; i < rawData.length - 1; i++){
+			for(i = 0; i < rawData.length - 1; i++){
 				if(!takeFromDictionary){
 					currentValue = new InputColour(rawData[i]);
 					nextValue = rawData[i + 1];
@@ -121,11 +121,9 @@ public class LZWCompressor{
 					nextValue = rawData[i];
 					combinedCurrentNext = simpleColourArray(currentValue, nextValue);
 				}
-					//logger.debug("currentValue = " + currentValue);
 					if(!dictionary.contains(combinedCurrentNext)){
 							if(takeFromDictionary){
 								addToStream(dictionary.get(currentValue));
-								//logger.debug("Taken from dictionary");
 								i--;
 							}else{
 								addToStream(currentValue.getFirst());
@@ -139,13 +137,20 @@ public class LZWCompressor{
 					}
 					
 			}//exit loop and process the last bit
-		combinedCurrentNext = simpleColourArray(currentValue, rawData[rawData.length - 1]);
-			if(dictionary.contains(combinedCurrentNext)){
-				addToStream(dictionary.get(combinedCurrentNext));
-			}else{
-				//addToStream(takeFromDictionary ? dictionary.get(currentValue) : Integer.parseInt(currentValue));
-				addToStream(rawData[rawData.length - 1]);
-			}
+				if(!takeFromDictionary){
+					addToStream(rawData[rawData.length - 1]);
+				}else{
+					combinedCurrentNext = simpleColourArray(currentValue, rawData[rawData.length - 1]);
+					if(dictionary.contains(combinedCurrentNext)){
+						addToStream(dictionary.get(combinedCurrentNext));
+					}else{
+						int[] currentColour = currentValue.getColour();
+						for(int j = 0; j < currentColour.length; j++){
+							addToStream(currentColour[j]);
+						}
+						addToStream(rawData[rawData.length - 1]);
+					}
+				}
 	}
 	
 	public void addToStream(int i){
@@ -228,9 +233,7 @@ public class LZWCompressor{
 	}
 	
 	public ArrayList<Integer> getPackagedBytes(){
-		logger.debug("processed = " + processCount);
 		addRemaining(outputStream);
-		logger.debug("Compression Finished, bytes = " + packagedBytes.size());
 		return packagedBytes;
 	}
 }

@@ -43,6 +43,11 @@ public class InputColour{
 	public int getLength(){
 		return colour.length;
 	}
+	
+	@Override
+	public String toString(){
+		return Arrays.toString(colour);
+	}
 
 	@Override
 	public int hashCode(){

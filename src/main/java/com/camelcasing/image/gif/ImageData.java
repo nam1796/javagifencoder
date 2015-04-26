@@ -51,7 +51,9 @@ public class ImageData {
 	
 	public ImageData init(){
 		checkImageSize();
-		quantilizeImage();
+		if(quantilizer == null){
+			quantilizeImage();
+		}
 		addGraphicsControlExtensionBytes();
 		addImageDescriptorBytes();
 		addColourTableBytes();
