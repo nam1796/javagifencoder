@@ -54,9 +54,9 @@ public class OctreeColourQuantilizer{
 			for(int i = 0; i < h; i++){
 				for(int j = 0; j < w; j++){
 					current = image.getRGB(j, i);
-					int r = (current >> 16) & 0xFF; //red value
-					int g = (current >> 8) & 0xFF; //green value
-					int b = current & 0xFF; //blue value
+					int r = (current >> 16) & 0xFF;
+					int g = (current >> 8) & 0xFF;
+					int b = current & 0xFF;
 					int[] colours = getCombinedColourNumbers(r, g, b);
 					colourBitArray.add(colours);
 					octree.addToNode(colours, r, g, b);

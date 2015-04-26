@@ -19,6 +19,7 @@ public class CreateGIF{
 		private File outputFile;
 		private LogicalScreenDescriptor logicalScreenDescriptor;
 		private ArrayList<ArrayList<Integer>> imageDataBytes;
+		private boolean useGlobalColourTable = false;
 		
 		private Logger logger = Logger.getLogger(getClass());
 	
@@ -46,7 +47,7 @@ public class CreateGIF{
 //	}
 	
 	private LogicalScreenDescriptor createLogicalScreenDescriptor(){
-		ScreenDescriptorField sdf = new ScreenDescriptorField(false, 1, false, 0);
+		ScreenDescriptorField sdf = new ScreenDescriptorField(useGlobalColourTable, 1, false, 0);
 		LogicalScreenDescriptor lsd = new LogicalScreenDescriptor(width, height, sdf, 0, 0);
 		return lsd;
 	}

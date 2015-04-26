@@ -8,12 +8,7 @@ public class OctreeSentinal {
 	
 	public OctreeSentinal(int maxColours){
 		this.maxColours = maxColours;
-		root = new OctreeNode(null, 0){
-			@Override
-			public String toString(){
-				return ("I am root");
-			}
-		};
+		root = new OctreeNode(null, 0);
 		root.setNext(root);
 		root.setPrevious(root);
 	}
