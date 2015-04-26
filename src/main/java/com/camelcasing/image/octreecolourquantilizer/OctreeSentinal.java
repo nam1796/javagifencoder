@@ -68,19 +68,18 @@ public class OctreeSentinal {
 		--size;
 	}
 	
-	public int indexOf(OctreeNode node){
-		OctreeNode n = getNext();
-		int count = 0;
-		while(n != node){
-			n = n.getNext();
-			count++;
+	public void prune(){
+		while(size > maxColours){
+			remove();
 		}
-		return count;
+		assignPointerListIndexes();
 	}
 	
-	public void prune(){
-		while(size >= maxColours){
-			remove();
+	private void assignPointerListIndexes(){
+		OctreeNode n = getNext();
+		for(int i = 0; i < size; i++){
+			n.setPointerListIndex(i);
+			n = n.getNext();
 		}
 	}
 	

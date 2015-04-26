@@ -50,6 +50,10 @@ public class ColourTable{
 		currentLocation++;
 	}
 	
+	public int getCurrentLocation(){
+		return currentLocation;
+	}
+	
 	/**
 	 * @return and int[] array that holds all the r,g,b values of the ColourTable
 	 */
