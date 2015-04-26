@@ -75,12 +75,14 @@ public class LZWCompressor{
 		private final int TERMINATION_CODE;
 		
 		private final int RESET_STREAM = 255 * 8;
+		private int processCount = 0;
 	
 	/**
 	 * @param rawData Array of indexes into the global/local colour table. 
 	 * @param bitSize Minimum number of bits required to represent the highest value contained in the <code>rawData</code>
 	 */
 	public LZWCompressor(int[] rawData, int bitSize){
+//		logger.debug("rawData.length = " + rawData.length);
 		CLEAR_CODE = (int)Math.pow(2, bitSize);
 		TERMINATION_CODE = CLEAR_CODE + 1;
 		startDictionaryEntry = TERMINATION_CODE + 1;
@@ -226,6 +228,7 @@ public class LZWCompressor{
 	}
 	
 	public ArrayList<Integer> getPackagedBytes(){
+		logger.debug("processed = " + processCount);
 		addRemaining(outputStream);
 		logger.debug("Compression Finished, bytes = " + packagedBytes.size());
 		return packagedBytes;

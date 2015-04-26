@@ -90,12 +90,14 @@ public class ImageData {
 		
 	private void addColourTableBytes(){
 		int[][] colourPalette = quantilizer.getColourPalette();
+//		logger.debug("ColourPalette size retrived from quantilizer = " + colourPalette.length);
 		ColourTable colourTable = new ColourTable(colourTableSize);
 			for(int i = 0; i < colourPalette.length; i++){
 				colourTable.addColour(colourPalette[i][0], colourPalette[i][1], colourPalette[i][2]);
 			}
 		int extraColour = (int)Math.pow(2, colourTableSize + 1);
 			if(extraColour > colourPalette.length){
+				logger.debug("adding extra colour -> " + extraColour);
 				for(int i = colourPalette.length; i < extraColour; i++){
 					colourTable.addColour(0,  0,  0);
 				}
@@ -118,7 +120,10 @@ public class ImageData {
 	}
 	
 	private void checkImageSize(){
-		if(image.getWidth() != width || image.getHeight() != height) image.resize(width, height);
+		if(image.getWidth() != width || image.getHeight() != height) {
+			logger.debug("image needed resizing");
+			image.resize(width, height);
+		}
 	}
 	
 	public ArrayList<Integer> getImageData(){

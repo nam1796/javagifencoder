@@ -1,15 +1,11 @@
 package com.camelcasing.image.octreecolourquantilizer;
 
-//import org.apache.log4j.Logger;
-
-
 /**
  * @author Philip Teclaff
  * @since 1.0
  */
 public class OctreeNode{
 	
-//	    private Logger logger = Logger.getLogger(getClass());
 		private int count = 0;
 		private OctreeNode[] children = new OctreeNode[8];
 		private OctreeNode parent;
@@ -18,6 +14,7 @@ public class OctreeNode{
 		private boolean isOnPointerList;
 		private OctreeNode next;
 		private OctreeNode previous;
+		private int pointerListIndex;
 	
 	public OctreeNode(OctreeNode parent, int index){
 		this.parent = parent;
@@ -130,6 +127,14 @@ public class OctreeNode{
 	
 	public int getIndex(){
 		return index;
+	}
+	
+	public void setPointerListIndex(int i){
+		pointerListIndex = i;
+	}
+	
+	public int getPointerListIndex(){
+		return pointerListIndex;
 	}
 	
 	@Override

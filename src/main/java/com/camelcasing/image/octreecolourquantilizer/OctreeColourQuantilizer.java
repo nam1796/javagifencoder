@@ -83,9 +83,10 @@ public class OctreeColourQuantilizer{
 	private int[] generateIndexedImage(){
 		int[] indexedColours = new int[colourBitArray.size()];
 		int count = 0;
+		OctreeNode target;
 			for(int[] c : colourBitArray){
 				int targetCount = 1;
-				OctreeNode target = octree.getRoot().getChildIfExists(c[0]);
+				target = octree.getRoot().getChildIfExists(c[0]);
 					while(target.getChildIfExists(c[targetCount]) != null){
 						target = target.getChildIfExists(c[targetCount]);
 						if(targetCount == 7){
@@ -93,9 +94,10 @@ public class OctreeColourQuantilizer{
 						}
 						targetCount++;
 					}
-				indexedColours[count] = octree.indexOf(target);
+				indexedColours[count] = target.getPointerListIndex();
 				count++;
 			}
+//		logger.debug("total number of pixels returned from quantilizer = " + count);
 		return indexedColours;
 	}
 	
@@ -105,7 +107,7 @@ public class OctreeColourQuantilizer{
 	}
 	
 	public int[][] createColourPalette(){
-		logger.debug("colourPaleteSize = " + octree.getSize());
+//		logger.debug("colourPaletteSize = " + octree.getSize());
 		int[][] colourP = new int[octree.getSize()][3];
 		OctreeNode otn = octree.getNext();
 			for(int i = 0; i < octree.getSize(); i++){
