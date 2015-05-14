@@ -2,7 +2,7 @@ package com.camelcasing.image.gif;
 
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
 
 import com.camelcasing.image.lwzcompression.LZWCompressor;
 import com.camelcasing.image.octreecolourquantilizer.OctreeColourQuantilizer;
@@ -13,7 +13,7 @@ import com.camelcasing.image.octreecolourquantilizer.OctreeColourQuantilizer;
  */
 public class ImageData {
 		
-		private Logger logger = Logger.getLogger(getClass());
+//		private Logger logger = Logger.getLogger(getClass());
 	
 		private int timeDelay;
 		private OctreeColourQuantilizer quantilizer;
@@ -39,13 +39,10 @@ public class ImageData {
 	 * @param quantilizer the OctreeColourQuantilizer associated with this image, as may be shared if using Global Colour Table
 	 * @param colourBitArray lsit of the original RGB values from the image (before quantilization)
 	 */
-	 //* @param gifOptions optional specific requirments for the image processing, use null to use defaults {@link com.camelcasing.image.gif.GIFOptions}
-	 //*/
 	public ImageData(int timeDelay, boolean localColourTable, int width, int height, OctreeColourQuantilizer quantilizer,
 			ArrayList<int[]> colourBitArray){
 		this.width = width;
 		this.height = height;
-//		this.image = image;
 		this.quantilizer = quantilizer;
 		this.colourBitArray = colourBitArray;
 		this.timeDelay = timeDelay;
@@ -55,10 +52,6 @@ public class ImageData {
 	}
 	
 	public ImageData init(){
-//		checkImageSize();
-//		if(quantilizer == null){
-//			quantilizer = new OctreeColourQuantilizer(maxColours);
-//		}
 		finalizeQuantilization();
 		addGraphicsControlExtensionBytes();
 		addImageDescriptorBytes();
@@ -84,7 +77,6 @@ public class ImageData {
 	private void addImageDescriptorBytes(){
 		ImageDescriptorFields imageDescriptorFields = new ImageDescriptorFields(localColourTable, false, false, 
 				localColourTable ? colourTableSize : 0);
-		logger.debug("colour table size = " + localColourTable != null ? colourTableSize : 0);
 		ImageDescriptor imageDescriptor = new ImageDescriptor(offsetLeft, offsetTop, width, height, imageDescriptorFields);
 		int[] imageDescriptorBytes = imageDescriptor.getImageDescriptor();
 			for(int i : imageDescriptorBytes) imageData.add(i);
@@ -92,12 +84,10 @@ public class ImageData {
 		
 	private void addColourTableBytes(){
 		int[][] colourPalette = quantilizer.getColourPalette();
-//		logger.debug("ColourPalette size retrived from quantilizer = " + colourPalette.length);
 		ColourTable colourTable = new ColourTable(colourTableSize);
 		colourTable.populateTableFromPalette(colourPalette);
 		int[] colours = colourTable.getColourTable();
 			for(int i : colours) imageData.add(i);
-		
 	}
 	
 	private void compressImage(){
@@ -112,14 +102,6 @@ public class ImageData {
 		for(int i : compressor.getPackagedBytes()) imageData.add(i);
 		imageData.add(0);
 	}
-	
-//	private InputImage checkImageSize(InputImage image){
-//		if(image.getWidth() != width || image.getHeight() != height) {
-//			logger.debug("image needed resizing");
-//			image.resize(width, height);
-//		}
-//		return image;
-//	}
 	
 	public ArrayList<Integer> getImageData(){
 		return imageData;

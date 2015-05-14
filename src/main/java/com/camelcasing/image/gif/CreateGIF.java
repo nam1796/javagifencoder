@@ -40,7 +40,6 @@ public class CreateGIF{
 	}
 	
 	public boolean create(){
-		
 		getImageBytes();
 		logicalScreenDescriptor = createLogicalScreenDescriptor();
 		writeBytes();
@@ -59,7 +58,7 @@ public class CreateGIF{
 			ArrayList[] imageData = new ArrayList[images.length];
 			OctreeColourQuantilizer quantilizer = new OctreeColourQuantilizer(maxColours);
 			for(int i = 0; i < images.length; i++){
-				imageData[i] = quantilizer.addImage(images[i]);
+				imageData[i] = quantilizer.addImage(checkImageSize(images[i]));
 			}
 			quantilizer.quantilize();
 			
@@ -70,6 +69,7 @@ public class CreateGIF{
 			globalColourTableBytes = colourTable.getColourTable();
 			
 			for(int i = 0; i < images.length; i++){
+
 				logger.info("processing image " + (i + 1) + " of " + images.length);
 				imageDataBytes.add(new ImageData(timeDelay, !useGlobalColourTable, width, height, quantilizer, imageData[i])
 				.init()
@@ -78,6 +78,7 @@ public class CreateGIF{
 		}else{
 			for(int i = 0; i < images.length; i++){
 				logger.info("processing image " + (i + 1) + " of " + images.length);
+				checkImageSize(images[i]);
 				OctreeColourQuantilizer quantilizer = new OctreeColourQuantilizer(maxColours);
 				ArrayList<int[]> colourTableBits = quantilizer.addImage(images[i]);
 				quantilizer.quantilize();
@@ -110,6 +111,14 @@ public class CreateGIF{
 			logger.error("Failed to write bytes to file: " + outputFile.getPath() + "\n" + e.getMessage());
 		}
 	}
+	
+	private InputImage checkImageSize(InputImage image){
+	if(image.getWidth() != width || image.getHeight() != height) {
+		logger.debug("image needed resizing");
+		image.resize(width, height);
+	}
+	return image;
+}
 	
 	public CreateGIF enableGlobalColourTable(){
 		useGlobalColourTable = true;
