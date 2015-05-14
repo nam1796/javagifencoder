@@ -2,7 +2,7 @@ package com.camelcasing.image.lwzcompression;
 
 import java.util.*;
 
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
 
 /**
  * Class to store the LZW compression code and handle clearing
@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
  */
 public class LZWDictionary {
 
-		private Logger logger = Logger.getLogger(getClass().getName());
+//		private Logger logger = Logger.getLogger(getClass().getName());
 		private ArrayList<InputColour> dictionary = new ArrayList<InputColour>();
 		private int offset;
 		

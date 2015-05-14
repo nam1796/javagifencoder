@@ -6,14 +6,14 @@ public class OctreeSentinal {
 		private int size;
 		private int maxColours;
 	
-	public OctreeSentinal(int maxColours){
+	protected OctreeSentinal(int maxColours){
 		this.maxColours = maxColours;
 		root = new OctreeNode(null, 0);
 		root.setNext(root);
 		root.setPrevious(root);
 	}
 	
-	public void addToNode(int[] colours, int r, int g, int b){
+	protected void addToNode(int[] colours, int r, int g, int b){
 		OctreeNode node = root.getChild(colours[0])
 				.getChild(colours[1])
 				.getChild(colours[2])
@@ -42,6 +42,24 @@ public class OctreeSentinal {
 		return root.getPrevious();
 	}
 	
+	protected OctreeNode getStartNode(int index){
+		OctreeNode otn = root.getChild(index);
+		if(otn != null) return otn;
+		int left = index;
+			if(index > 0) left = index - 1;
+		int right = index;
+			if(index < 7) right = index + 1; 
+		while(true){
+			otn = root.getChild(right);
+			if(otn != null) return otn;
+			otn = root.getChild(left);
+			if(otn != null) return otn;
+			
+			if(left > 0) left = index - 1;
+			if(right < 7) right = index + 1;
+		}
+	}
+	
 	private void addToEnd(OctreeNode otn){
 		getLast().setNext(otn);
 		otn.setNext(root.getNext());
@@ -63,7 +81,7 @@ public class OctreeSentinal {
 		--size;
 	}
 	
-	public void prune(){
+	protected void prune(){
 		while(size > maxColours){
 			remove();
 		}
@@ -78,7 +96,7 @@ public class OctreeSentinal {
 		}
 	}
 	
-	public int getSize(){
+	protected int getSize(){
 		return size;
 	}
 }

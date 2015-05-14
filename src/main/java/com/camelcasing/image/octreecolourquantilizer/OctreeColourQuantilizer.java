@@ -15,41 +15,47 @@ public class OctreeColourQuantilizer{
 	
 		private Logger logger = Logger.getLogger(OctreeColourQuantilizer.class);
 
-		private InputImage image;
+//		private InputImage image;
 		/**
 		 * Multi-dimensional Array of the RGB values
 		 * format = 
 		 * [R][G][B]
 		 * [R][G][B]...
 		 */
-		private int[][] colourPalette;
 		private int[] imageColourPalette;
 		private OctreeSentinal octree;
-		private ArrayList<int[]> colourBitArray = new ArrayList<int[]>();
-		private int[] quantilizedInput;
+//		private ArrayList<int[]> colourBitArray = new ArrayList<int[]>();
 		private final int DEPTH = 8;
 
-	public OctreeColourQuantilizer(InputImage image, int maxColours){
-		this.image = image;
+//	public OctreeColourQuantilizer(InputImage image, int maxColours){
+//		this.image = image;
+//		octree = new OctreeSentinal(maxColours);
+//	}
+	
+	public OctreeColourQuantilizer(int maxColours){
+//		this.image = image;
 		octree = new OctreeSentinal(maxColours);
+	}
+	
+	public ArrayList<int[]> addImage(InputImage image){
+		int w = image.getWidth();
+		int h = image.getHeight();
+		ArrayList<int[]> colourBitArray = new ArrayList<int[]>(w * h);
+//		extractRGBValues(image, w, h, colourBitArray);
+		return extractRGBValues(image, w, h, colourBitArray);
 	}
 	
 	public OctreeColourQuantilizer quantilize(){
 		logger.debug("Quantilization Started");
-		extractRGBValues();
+//		extractRGBValues();
 		pruneTree();
-		quantilizedInput = generateIndexedImage();
-		colourPalette = createColourPalette();
 		return(this);
 	}
 		
-	/**
-	 * Processes the image row by row and adds RGB array to rawInput
-	 */
-	private void extractRGBValues(){
+	private ArrayList<int[]> extractRGBValues(InputImage image, int w, int h, ArrayList<int[]> colourBitArray){
 		logger.debug("Extracting RGB Started");
-		int w = image.getWidth();
-		int h = image.getHeight();
+//		int w = image.getWidth();
+//		int h = image.getHeight();
 		int current;
 			for(int i = 0; i < h; i++){
 				for(int j = 0; j < w; j++){
@@ -60,9 +66,9 @@ public class OctreeColourQuantilizer{
 					int[] colours = getCombinedColourNumbers(r, g, b);
 					colourBitArray.add(colours);
 					octree.addToNode(colours, r, g, b);
-		
 				}
 			}
+		return colourBitArray;
 	}
 	
 	public int[] getCombinedColourNumbers(int r, int g, int b){
@@ -80,7 +86,7 @@ public class OctreeColourQuantilizer{
 		octree.prune();
 	}
 	
-	private int[] generateIndexedImage(){
+	public int[] getQuantilizedInput(ArrayList<int[]> colourBitArray){
 		int[] indexedColours = new int[colourBitArray.size()];
 		int count = 0;
 		OctreeNode target;
@@ -97,13 +103,8 @@ public class OctreeColourQuantilizer{
 				indexedColours[count] = target.getPointerListIndex();
 				count++;
 			}
-//		logger.debug("total number of pixels returned from quantilizer = " + count);
-		return indexedColours;
-	}
-	
-	public int[] getQuantilizedInput(){
 		logger.debug("Quantilization Finished");
-		return quantilizedInput;
+		return indexedColours;
 	}
 	
 	public int[][] createColourPalette(){
@@ -120,7 +121,7 @@ public class OctreeColourQuantilizer{
 	}
 	
 	public int[][] getColourPalette(){
-		return colourPalette;
+		return createColourPalette();
 	}
 	
 	public int getColourCount(){

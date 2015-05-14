@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.camelcasing.compression.gif</groupId>
   <artifactId>CreateGIF</artifactId>
-  <version>0.5</version>
+  <version>1.0</version>
   <packaging>jar</packaging>
   <name>CreateGIF</name>
   <url>http://maven.apache.org</url>
