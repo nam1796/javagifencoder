@@ -151,6 +151,7 @@ public class LZWCompressor{
 						addToStream(rawData[rawData.length - 1]);
 					}
 				}
+				addRemaining(outputStream);
 	}
 	
 	public void addToStream(int i){
@@ -230,10 +231,11 @@ public class LZWCompressor{
 			}
 		}
 		finalisePackagedBytes();
+		logger.debug("compression finished");
 	}
 	
 	public ArrayList<Integer> getPackagedBytes(){
-		addRemaining(outputStream);
+		//addRemaining(outputStream);
 		return packagedBytes;
 	}
 }

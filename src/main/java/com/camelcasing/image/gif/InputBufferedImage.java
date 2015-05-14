@@ -1,8 +1,5 @@
 package com.camelcasing.image.gif;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.*;
@@ -50,7 +47,7 @@ public class InputBufferedImage implements InputImage{
 	}
 
 	@Override
-	public void resize(int myWidth, int myHeight) {
+	public InputImage resize(int myWidth, int myHeight) {
 		BufferedImage i = new BufferedImage(myWidth, myHeight, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g2d = i.createGraphics();
 		g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
@@ -58,6 +55,6 @@ public class InputBufferedImage implements InputImage{
 		g2d.dispose();
 		image = i;
 		logger.debug("returned rebuilt image");
-		return;
+		return this;
 	}
 }

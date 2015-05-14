@@ -5,6 +5,8 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
+import com.camelcasing.image.octreecolourquantilizer.OctreeColourQuantilizer;
+
 /**
  * @author Philip Teclaff
  * @since 1.0
@@ -20,6 +22,8 @@ public class CreateGIF{
 		private LogicalScreenDescriptor logicalScreenDescriptor;
 		private ArrayList<ArrayList<Integer>> imageDataBytes;
 		private boolean useGlobalColourTable = false;
+		private int[] globalColourTableBytes;
+		private int globalColourTableSize = 0;
 		
 		private Logger logger = Logger.getLogger(getClass());
 	
@@ -36,28 +40,52 @@ public class CreateGIF{
 	}
 	
 	public boolean create(){
-		logicalScreenDescriptor = createLogicalScreenDescriptor();
 		getImageBytes();
+		logicalScreenDescriptor = createLogicalScreenDescriptor();
 		writeBytes();
 		return true;
 	}
-
-//	private void createStream(){
-//		add option to pass OutputStream instead of File
-//	}
 	
 	private LogicalScreenDescriptor createLogicalScreenDescriptor(){
-		ScreenDescriptorField sdf = new ScreenDescriptorField(useGlobalColourTable, 1, false, 0);
+		ScreenDescriptorField sdf = new ScreenDescriptorField(useGlobalColourTable, 1, false, globalColourTableSize);
 		LogicalScreenDescriptor lsd = new LogicalScreenDescriptor(width, height, sdf, 0, 0);
 		return lsd;
 	}
 	
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	private void getImageBytes(){
-		for(int i = 0; i < images.length; i++){
-			logger.info("processing image " + (i + 1) + " of " + images.length);
-			imageDataBytes.add(new ImageData(images[i], timeDelay, maxColours, width, height)
-			.init()
-			.getImageData());
+		if(useGlobalColourTable){
+			ArrayList[] imageData = new ArrayList[images.length];
+			OctreeColourQuantilizer quantilizer = new OctreeColourQuantilizer(maxColours);
+			for(int i = 0; i < images.length; i++){
+				imageData[i] = quantilizer.addImage(checkImageSize(images[i]));
+			}
+			quantilizer.quantilize();
+			
+			int[][] colourPalette = quantilizer.getColourPalette();
+			globalColourTableSize = GIFUtils.getColourTableSize(quantilizer.getColourCount());
+			ColourTable colourTable = new ColourTable(globalColourTableSize);
+			colourTable.populateTableFromPalette(colourPalette);
+			globalColourTableBytes = colourTable.getColourTable();
+			
+			for(int i = 0; i < images.length; i++){
+
+				logger.info("processing image " + (i + 1) + " of " + images.length);
+				imageDataBytes.add(new ImageData(timeDelay, !useGlobalColourTable, width, height, quantilizer, imageData[i])
+				.init()
+				.getImageData());
+			}
+		}else{
+			for(int i = 0; i < images.length; i++){
+				logger.info("processing image " + (i + 1) + " of " + images.length);
+				checkImageSize(images[i]);
+				OctreeColourQuantilizer quantilizer = new OctreeColourQuantilizer(maxColours);
+				ArrayList<int[]> colourTableBits = quantilizer.addImage(images[i]);
+				quantilizer.quantilize();
+				imageDataBytes.add(new ImageData(timeDelay, !useGlobalColourTable, width, height, quantilizer, colourTableBits)
+				.init()
+				.getImageData());
+			}	
 		}
 	}
 	
@@ -65,23 +93,45 @@ public class CreateGIF{
 		try(OutputStream os = new FileOutputStream(outputFile)){
 			for(int i : Headers.getHeader89a()) os.write(i);
 			for(int i : logicalScreenDescriptor.getLogicalScreenDescriptor()) os.write(i);
-				if(images.length > 1){
-					for(int i : new NetscapeApplicationExtension(0).create()) os.write(i);
-				}
+				
+			if(useGlobalColourTable){
+				for(int i : globalColourTableBytes) os.write(i);
+			}
+				
+			if(images.length > 1){
+				for(int i : new NetscapeApplicationExtension(0).create()) os.write(i);
+			}
+			
 			for(int i = 0; i < imageDataBytes.size(); i++){
 				for(int j : imageDataBytes.get(i)) os.write(j);
 			}
+			
 			os.write(Headers.getTrailer());
 		}catch(IOException e){
 			logger.error("Failed to write bytes to file: " + outputFile.getPath() + "\n" + e.getMessage());
 		}
 	}
 	
+	private InputImage checkImageSize(InputImage image){
+	if(image.getWidth() != width || image.getHeight() != height) {
+		logger.debug("image needed resizing");
+		image.resize(width, height);
+	}
+	return image;
+}
+	
+	public CreateGIF enableGlobalColourTable(){
+		useGlobalColourTable = true;
+		return this;
+	}
+	
 	public CreateGIF setMaxColours(int maxColours) {
+		if(maxColours > 256) maxColours = 256;
+		if(maxColours < 1) maxColours = 1;
 		this.maxColours = maxColours;
 		return this;
 	}
-	public CreateGIF setTimeDelays(int timeDelay) {
+	public CreateGIF setTimeDelay(int timeDelay) {
 		this.timeDelay = timeDelay;
 		return this;
 	}

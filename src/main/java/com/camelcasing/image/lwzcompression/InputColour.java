@@ -2,8 +2,6 @@ package com.camelcasing.image.lwzcompression;
 
 import java.util.Arrays;
 
-import com.camelcasing.image.gif.GIFUtils;
-
 /**
  * Basically a wapper Class for an int[] with <code>HashCode</code> and <code>Equals</code> overridden 
  * to allow arrays to be added to a <code>HashMap</code> and exploit the <code>Contains</code> method. 

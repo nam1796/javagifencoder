@@ -55,4 +55,13 @@ public class GIFUtils{
 		int n = ((int)Math.pow(2, colourTableSize + 1)) - 1;
 		return((Integer.toBinaryString(n)).length());
 	}
+	
+	public static int getColourTableSize(int colourCount){
+		if(colourCount >= 128) return 7;
+		if(colourCount >= 64) return 6;
+		if(colourCount >= 32) return 5;
+		if(colourCount >= 16) return 4;
+		if(colourCount >= 8) return 3;
+		return 2;
+	}
 }

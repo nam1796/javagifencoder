@@ -14,7 +14,7 @@ public class OctreeNode{
 		private boolean isOnPointerList;
 		private OctreeNode next;
 		private OctreeNode previous;
-		private int pointerListIndex;
+		private int pointerListIndex = -1;
 	
 	public OctreeNode(OctreeNode parent, int index){
 		this.parent = parent;
@@ -71,9 +71,9 @@ public class OctreeNode{
 	}
 	
 	/**
-	 * declare this node as the bottom of the tree and holder of a colour values
+	 * @param b declares this node as the bottom of the tree and holder of a colour values 
 	 */
-	protected void setOnPointerList(boolean b){
+	public void setOnPointerList(boolean b){
 		isOnPointerList = b;
 	}
 	
@@ -81,27 +81,27 @@ public class OctreeNode{
 	 * 
 	 * @return if this node is at the bottom of the tree and holds actual colour values
 	 */
-	protected boolean isOnPointerList(){
+	public boolean isOnPointerList(){
 		return isOnPointerList;
 	}
 	
-	protected OctreeNode getNext(){
+	public OctreeNode getNext(){
 		return next;
 	}
 	
-	protected OctreeNode getPrevious(){
+	public OctreeNode getPrevious(){
 		return previous;
 	}
 	
-	protected void setNext(OctreeNode otn){
+	public void setNext(OctreeNode otn){
 		next = otn;
 	}
 	
-	protected void setPrevious(OctreeNode otn){
+	public void setPrevious(OctreeNode otn){
 		previous = otn;
 	}
 	
-	protected void kill(int index){
+	public void kill(int index){
 		children[index] = null;
 	}
 	
@@ -114,14 +114,17 @@ public class OctreeNode{
 	}
 
 	public int getRed() {
+		if(count == 0) count = 1;
 		return red / count;
 	}
 
 	public int getGreen() {
+		if(count == 0) count = 1;
 		return green / count;
 	}
 
 	public int getBlue() {
+		if(count == 0) count = 1;
 		return blue / count;
 	}
 	

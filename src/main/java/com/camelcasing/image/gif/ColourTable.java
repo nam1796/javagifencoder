@@ -11,13 +11,17 @@ public class ColourTable{
 	 */
 	protected final int tableSize;
 	/**
+	 * 
+	 */
+	private final int expandedTableSize;
+	/**
 	 * List containing RGB values,
 	 */
 	protected int[] colourTable; 
 	/**
 	 * keeps track of where to add next value in table array.
 	 */
-	protected int currentLocation = 0;
+	private int currentLocation = 0;
 	 /**
 	  * If the {@link com.camelcasing.image.gif.ColourTable#getColourTable() getColourTable} method is called before 
 	  * the table has a definition for all the allocated colours then remaining spaces will be filled with the colour BLACK  
@@ -25,6 +29,7 @@ public class ColourTable{
 	  */
 	public ColourTable(int tableSize){
 		this.tableSize = tableSize;
+		expandedTableSize = (int)Math.pow(2, tableSize + 1);
 		calculateTableSize();
 	}
 	
@@ -32,7 +37,7 @@ public class ColourTable{
 	 * Calculate the colourTable size based on the tableSize, making room for RGB values
 	 */
 	protected void calculateTableSize(){
-		colourTable = new int[((int)Math.pow(2, tableSize + 1)) * 3];
+		colourTable = new int[expandedTableSize * 3];
 	}
 	
 	/**
@@ -50,8 +55,21 @@ public class ColourTable{
 		currentLocation++;
 	}
 	
-	public int getCurrentLocation(){
-		return currentLocation;
+	/**
+	 * Adds all the colours from the supplied colourPalette, and appends Black to fill the space
+	 * if colourPalette falls short of {@link com.camelcasing.image.gif.ColourTable#tableSize tableSize} passed to the constructor.
+	 * @param colourPalette Array containing 
+	 */
+	public void populateTableFromPalette(int[][] colourPalette){
+		int loopEnd = Math.min(colourPalette.length, expandedTableSize);
+		for(int i = 0; i < loopEnd; i++){
+			addColour(colourPalette[i][0], colourPalette[i][1], colourPalette[i][2]);
+		}
+		if(expandedTableSize > colourPalette.length){
+			for(int i = colourPalette.length; i < expandedTableSize; i++){
+				addColour(0,  0,  0);
+			}
+		}
 	}
 	
 	/**
